@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ronoid.bluetoothcomm"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk android:minSdkVersion="8" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/app_name" >
+        <activity
+            android:label="@string/app_name"
+            android:name="com.tac.bluetoothcomm.Toe_Walking_Welcome" 
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan">
+          <!-- android:screenOrientation="portrait" -->
+            <intent-filter >
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.tac.bluetoothcomm.BluetoothComm"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Black.NoTitleBar"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name="com.tac.bluetoothcomm.ScanDeviceActivity"
+            android:label="@string/select_device"
+            android:theme="@android:style/Theme.Dialog"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name="com.tac.bluetoothcomm.AboutActivity"
+            android:theme="@android:style/Theme.Dialog"
+            android:screenOrientation="portrait"></activity>
+        
+    </application>
+
+</manifest>

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#B0C4DE"
+    >   
+    <RelativeLayout        
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        >
+        <LinearLayout 
+            android:id="@+id/line" 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ImageView                 
+            android:layout_width="fill_parent"
+            android:layout_height="30dp"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/logo"/>
+            <LinearLayout 
+               android:layout_width="fill_parent" 
+               android:layout_height="wrap_content"
+               android:orientation="horizontal">
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/connected_device"
+                android:textSize="12sp"
+                android:textColor="#000000"/>
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/connected_device"
+                android:layout_weight="2"
+                android:text="@string/nodevice"
+                android:textSize="12sp"
+                android:textColor="#000000"/> 
+            </LinearLayout> 
+            <TextView 
+               android:layout_width="fill_parent" 
+               android:layout_height="wrap_content"
+               android:text="    "
+               android:textSize="8sp"/>
+            <TableLayout 
+               android:layout_width="fill_parent" 
+               android:layout_height="wrap_content"
+               android:orientation="vertical">
+            <TableRow 
+               android:layout_width="fill_parent" 
+               android:layout_height="wrap_content"
+               android:orientation="horizontal">
+               <TextView 
+     			android:layout_height="wrap_content"
+     			android:layout_width="wrap_content"
+ 	 			android:id="@+id/detected_time_text" 
+ 	 			android:text="检测时间:" 
+ 	 			android:textSize="20sp"	 
+ 	 			android:layout_weight="1"
+ 	 			android:textColor="#000000"			
+ 	 			/>
+               <TextView 
+     			android:layout_height="wrap_content"
+     			android:layout_width="wrap_content"
+ 	 			android:id="@+id/detected_time"  	 			
+ 	 			android:textSize="20sp" 
+ 	 			android:layout_weight="5"
+ 	 			android:textColor="#000000"	 			
+ 	 			/> 
+ 	 					 	 			    
+             </TableRow>
+             <TableRow 
+               android:layout_width="fill_parent" 
+               android:layout_height="wrap_content"
+               android:orientation="horizontal">
+               <TextView 
+     			android:layout_height="wrap_content"
+     			android:layout_width="wrap_content"
+ 	 			android:id="@+id/detected_nume_text" 
+ 	 			android:text="检测次数:" 
+ 	 			android:textSize="20sp"	 
+ 	 			android:layout_weight="1"
+ 	 			android:textColor="#000000"			
+ 	 			/>
+               <TextView 
+     			android:layout_height="wrap_content"
+     			android:layout_width="wrap_content"
+ 	 			android:id="@+id/detected_num" 	 			
+ 	 			android:textSize="20sp" 
+ 	 			android:layout_weight="5"
+ 	 			android:textColor="#000000"	 			
+ 	 			/> 
+ 	 			
+             </TableRow>
+             <TableRow 
+               android:layout_width="fill_parent" 
+               android:layout_height="wrap_content"
+               android:orientation="horizontal">              
+               <TextView 
+     			android:layout_height="wrap_content"
+     			android:layout_width="wrap_content"
+ 	 			android:id="@+id/sharp_num_text" 
+ 	 			android:text="尖足次数:" 
+ 	 			android:textSize="20sp" 
+ 	 			android:layout_weight="1"
+ 	 			android:textColor="#000000"	 			
+ 	 			/> 
+ 	 			<TextView 
+     			android:layout_height="wrap_content"
+     			android:layout_width="wrap_content"
+ 	 			android:id="@+id/sharp_num" 
+ 	 			
+ 	 			android:textSize="20sp"	 
+ 	 			android:layout_weight="5"
+ 	 			android:textColor="#000000"			
+ 	 			/>     
+             </TableRow>
+            </TableLayout>                      
+    </LinearLayout>
+    <LinearLayout 
+        android:id="@+id/lineChar" 
+ 	    android:orientation="horizontal" 
+        android:layout_width="fill_parent" 
+        android:layout_height="300dp" 
+        android:layout_below="@id/line"
+        android:background="#B0C4DE"
+        android:layout_marginTop="20sp"
+     />
+      
+      <Button   android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/backButton"
+                android:textSize="12sp"               
+                android:text="@string/back"                
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                />
+        <Button   android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/disconnectButton"
+                android:textSize="12sp"               
+                android:text="@string/disconnect"               
+                android:layout_toLeftOf="@id/backButton"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentBottom="true"
+                
+                />  
+    </RelativeLayout>
+    
+    
+      
+   <!--    <TextView android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tx_history"
+            android:textSize="12dp"
+        /> 
+        <EditText android:id="@+id/tx_history"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:textSize="12dp"
+            android:lines="3"/>
+        <TextView android:layout_width="fill_parent" 
+            android:layout_height="wrap_content"
+            android:text="@string/rx_history"
+            android:textSize="12dp"
+         />
+        <EditText android:id="@+id/rx_history"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:textSize="12dp"
+            android:lines="3"/> 
+   <LinearLayout android:layout_width="fill_parent"
+       		android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <Button android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/disconnectButton"
+                android:textSize="12dp"
+                android:layout_weight="1"
+                android:text="@string/disconnect"/>
+	    <Button android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:text="@string/clearTx"
+        	    android:textSize="12dp"
+        	    android:layout_weight="1"
+        	    android:id="@+id/clearTx"/>
+	    <Button android:layout_width="wrap_content"
+        	    android:layout_height="wrap_content"
+        	    android:text="@string/clearRx"
+        	    android:textSize="12dp"
+        	    android:layout_weight="1"
+        	    android:id="@+id/clearRx"/>
+	</LinearLayout>
+	<LinearLayout android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:layout_gravity="bottom">
+	    <EditText android:id="@+id/inputEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:textSize="16dp"/>
+	    <Button android:id="@+id/clearALL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/clearALL"/>
+        <Button android:id="@+id/sendButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/sendButton"/>
+                
+	</LinearLayout>-->
+	
+	
+	
+	<!--<com.tac.bluetoothcomm.LineSurfaceView
+    android:id="@+id/sv"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    />-->
+</LinearLayout>

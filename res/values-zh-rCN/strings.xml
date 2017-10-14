@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 主菜单相关 -->
+    <string name="app_name">尖足步态反馈训练系统</string>
+    <string name="app_title">Toe_Walking</string>
+    <string name="start_test">下一步</string>
+    <string name="paried_title">已配对设备</string>
+    <string name="connected_device">连接设备名称：</string>
+    <string name="tx_history">发送历史:</string>
+    <string name="rx_history">接收历史:</string>
+    <string name="sendButton">发送</string>
+    <string name="nodevice">还未连接蓝牙设备</string>
+    <string name="clearTx">清空发送数据</string>
+    <string name="clearRx">清空接收数据</string>
+    <string name="disconnect">断开连接</string>
+    <string name="title_connecting">连接中...</string>
+    <string name="title_connected_to">已连接: </string>
+    <string name="title_not_connected">还未连接蓝牙设备</string>
+    <string name="clearALL">清空</string>
+    <string name="back">返回</string>
+    <!-- 菜单 -->
+    <string name="scan">搜索</string>
+    <string name="discoverable">设备可检测</string>
+    <string name="about">关于</string>
+    <string name="exit">退出</string>
+    <!-- 搜索界面 -->
+    <string name="noNewDevice">没有发现新设备</string>
+    <string name="noPairedDevice">没有配对的设备</string>
+    <string name="scanning">搜索中...</string>
+    <string name="select_device">选择设备配对</string>
+    <string name="pairedDevice">已配对的设备</string>
+    <string name="newDevice">新搜索的设备</string>
+    <string name="scanNew">搜索新设备</string>
+    <!-- about菜单 -->
+    <string name="app_about">本软件由北京航空航天大学生物与医学工程学院基于android系统平台自主开发完成。
+        实现对尖足步态的实时监测和反馈报警。当用户以尖足步态行走时，系统发出声音报警信号提示用户纠正步态。
+          	</string>
+
+</resources>

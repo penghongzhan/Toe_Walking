@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+   android:id="@+id/info_input"
+    >
+    <RelativeLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal" 
+        >
+ <TextView 
+     android:layout_height="wrap_content"
+     android:layout_width="wrap_content"
+ 	 android:id="@+id/info_name_input" 
+ 	 android:text="姓名：" 
+ 	 android:textSize="10pt"/>   
+<EditText 
+    android:id="@+id/info_name_edit"
+	android:layout_width="fill_parent" 
+    android:layout_height="wrap_content"
+    android:textSize="10pt"
+    android:layout_toRightOf="@id/info_name_input"
+    android:layout_alignTop="@id/info_name_input"/>
+<TextView 
+     android:layout_height="wrap_content"
+     android:layout_width="wrap_content"
+ 	 android:id="@+id/info_age_input" 
+ 	 android:text="年龄：" 
+ 	 android:textSize="10pt"
+ 	 android:layout_below="@id/info_name_input"
+ 	 android:layout_marginTop="20dip"/>   
+<EditText 
+    android:id="@+id/info_age_edit"
+	android:layout_width="fill_parent" 
+    android:layout_height="wrap_content"
+    android:textSize="10pt"
+    android:layout_toRightOf="@id/info_age_input"
+    android:layout_alignTop="@id/info_age_input"
+    />
+<TextView 
+     android:layout_height="wrap_content"
+     android:layout_width="wrap_content"
+ 	 android:id="@+id/info_sex_input" 
+ 	 android:text="性别：" 
+ 	 android:textSize="10pt"
+ 	 android:layout_below="@id/info_age_input"
+ 	 android:layout_marginTop="20dip"/>   
+<EditText 
+    android:id="@+id/info_sex_edit"
+	android:layout_width="fill_parent" 
+    android:layout_height="wrap_content"
+    android:textSize="10pt"
+    android:layout_toRightOf="@id/info_sex_input"
+    android:layout_alignTop="@id/info_sex_input"
+    />
+<TextView 
+     android:layout_height="wrap_content"
+     android:layout_width="wrap_content"
+ 	 android:id="@+id/info_value_input" 
+ 	 android:text="阈值：" 
+ 	 android:textSize="10pt"
+ 	 android:layout_below="@id/info_sex_input"
+ 	 android:layout_marginTop="20dip"/>   
+<EditText 
+    android:id="@+id/info_value_edit"
+	android:layout_width="fill_parent" 
+    android:layout_height="wrap_content"
+    android:textSize="10pt"
+    android:layout_toRightOf="@id/info_value_input"
+    android:layout_alignTop="@id/info_value_input"
+    />
+        
+        
+    </RelativeLayout>
+ 
+</LinearLayout>
