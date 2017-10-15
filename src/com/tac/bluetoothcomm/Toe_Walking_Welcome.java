@@ -156,7 +156,7 @@ public class Toe_Walking_Welcome extends Activity {
         				intent.putExtra("age", age);
         				intent.putExtra("sex", sex);
         				intent.putExtra("value", value);
-        				intent.setClass(Toe_Walking_Welcome.this,BluetoothComm.class);
+        				intent.setClass(Toe_Walking_Welcome.this,FunctionSelectorActivity.class);
         				Toe_Walking_Welcome.this.startActivity(intent);
         				finish();        							
             		}else{
@@ -205,7 +205,7 @@ public class Toe_Walking_Welcome extends Activity {
 			intent.putExtra("age", age);
 			intent.putExtra("sex", sex);
 			intent.putExtra("value", value);
-			intent.setClass(Toe_Walking_Welcome.this,BluetoothComm.class);
+			intent.setClass(Toe_Walking_Welcome.this, FunctionSelectorActivity.class);
 			Toe_Walking_Welcome.this.startActivity(intent);
 			//finish();
 		}
@@ -247,5 +247,10 @@ public class Toe_Walking_Welcome extends Activity {
             }  
         });  
         builder.create().show();  
-    }   
+    }
+
+	@Override
+	public void onBackPressed() {
+		finish();
+	}
 }
