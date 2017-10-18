@@ -179,8 +179,8 @@ public class BluetoothComm_sharp extends Activity {
 		//clearRxButton.setOnClickListener(new btnClickedListener());
 		//clearTxButton = (Button)findViewById(R.id.clearTx);
 		//clearTxButton.setOnClickListener(new btnClickedListener());
-		time = (TextView) findViewById(R.id.detected_time);
-		detected_num = (TextView) findViewById(R.id.detected_num);
+		time = (TextView) findViewById(R.id.detected_time_sharp);
+		detected_num = (TextView) findViewById(R.id.detected_num_sharp);
 		sharp_num = (TextView) findViewById(R.id.sharp_num);
 		back = (Button) findViewById(R.id.backButton);
 		back.setOnClickListener(new back_to_welcome());
@@ -193,7 +193,7 @@ public class BluetoothComm_sharp extends Activity {
 		//inputEdit = (EditText)findViewById(R.id.inputEdit);
 		connectDevices = (TextView) findViewById(R.id.connected_device);
 		logo = (ImageView) findViewById(R.id.logo);
-		logo.setBackgroundResource(R.drawable.title);
+		logo.setBackgroundResource(R.drawable.title02);
 		//AppPublic.linedataint=new ArrayList<Integer>();
 		//sv=(LineSurfaceView)findViewById(R.id.sv);
 		AppPublic.power_all_ch1_1 = 0;

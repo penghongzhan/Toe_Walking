@@ -62,7 +62,7 @@
                <TextView 
      			android:layout_height="wrap_content"
      			android:layout_width="wrap_content"
- 	 			android:id="@+id/detected_time"  	 			
+ 	 			android:id="@+id/detected_time_sharp"
  	 			android:textSize="20sp" 
  	 			android:layout_weight="5"
  	 			android:textColor="#000000"	 			
@@ -85,7 +85,7 @@
                <TextView 
      			android:layout_height="wrap_content"
      			android:layout_width="wrap_content"
- 	 			android:id="@+id/detected_num" 	 			
+ 	 			android:id="@+id/detected_num_sharp"
  	 			android:textSize="20sp" 
  	 			android:layout_weight="5"
  	 			android:textColor="#000000"	 			

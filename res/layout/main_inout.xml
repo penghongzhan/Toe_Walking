@@ -10,7 +10,7 @@
             android:layout_height="wrap_content"
     >
         <LinearLayout
-                android:id="@+id/line"
+                android:id="@+id/line_inout"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -18,7 +18,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="30dp"
                     android:layout_gravity="center_horizontal"
-                    android:id="@+id/logo"/>
+                    android:id="@+id/logo_inout"/>
             <LinearLayout
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
                           android:textColor="#000000"/>
                 <TextView android:layout_width="wrap_content"
                           android:layout_height="wrap_content"
-                          android:id="@+id/connected_device"
+                          android:id="@+id/connected_device_inout"
                           android:layout_weight="2"
                           android:text="@string/nodevice"
                           android:textSize="12sp"
@@ -53,7 +53,7 @@
                     <TextView
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
-                            android:id="@+id/detected_time_text"
+                            android:id="@+id/detected_time_text_inout"
                             android:text="检测时间:"
                             android:textSize="20sp"
                             android:layout_weight="1"
@@ -62,7 +62,7 @@
                     <TextView
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
-                            android:id="@+id/detected_time"
+                            android:id="@+id/detected_time_inout"
                             android:textSize="20sp"
                             android:layout_weight="5"
                             android:textColor="#000000"
@@ -76,7 +76,7 @@
                     <TextView
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
-                            android:id="@+id/detected_nume_text"
+                            android:id="@+id/detected_nume_text_inout"
                             android:text="检测次数:"
                             android:textSize="20sp"
                             android:layout_weight="1"
@@ -85,7 +85,7 @@
                     <TextView
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
-                            android:id="@+id/detected_num"
+                            android:id="@+id/detected_num_inout"
                             android:textSize="20sp"
                             android:layout_weight="5"
                             android:textColor="#000000"
@@ -100,7 +100,7 @@
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
                             android:id="@+id/in_num_text"
-                            android:text="内翻次数:"
+                            android:text="外翻次数:"
                             android:textSize="20sp"
                             android:layout_weight="1"
                             android:textColor="#000000"
@@ -122,7 +122,7 @@
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
                             android:id="@+id/out_num_text"
-                            android:text="外翻次数:"
+                            android:text="内翻次数:"
                             android:textSize="20sp"
                             android:layout_weight="1"
                             android:textColor="#000000"
@@ -139,18 +139,18 @@
             </TableLayout>
         </LinearLayout>
         <LinearLayout
-                android:id="@+id/lineChar"
+                android:id="@+id/lineChar_inout"
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="300dp"
-                android:layout_below="@id/line"
+                android:layout_below="@id/line_inout"
                 android:background="#B0C4DE"
                 android:layout_marginTop="20sp"
         />
 
         <Button android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/backButton"
+                android:id="@+id/backButton_inout"
                 android:textSize="12sp"
                 android:text="@string/back"
                 android:layout_alignParentRight="true"
@@ -158,10 +158,10 @@
         />
         <Button android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/disconnectButton"
+                android:id="@+id/disconnectButton_inout"
                 android:textSize="12sp"
                 android:text="@string/disconnect"
-                android:layout_toLeftOf="@id/backButton"
+                android:layout_toLeftOf="@id/backButton_inout"
                 android:layout_marginRight="10dp"
                 android:layout_alignParentBottom="true"
 

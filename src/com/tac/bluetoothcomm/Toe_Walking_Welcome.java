@@ -53,7 +53,7 @@ public class Toe_Walking_Welcome extends Activity {
 		setContentView(R.layout.welcome);
 		button01=(Button)findViewById(R.id.start); 
 		title_pic=(ImageView)findViewById(R.id.title_pic);
-		title_pic.setBackgroundResource(R.drawable.title);
+		title_pic.setBackgroundResource(R.drawable.title02);
 		welcome_pic=(ImageView)findViewById(R.id.welcome_pic);
 		welcome_pic.setBackgroundResource(R.drawable.welcome1);
 		button01.setOnClickListener(new begin());

@@ -188,29 +188,29 @@ public class BluetoothComm_inout extends Activity {
 		//clearRxButton.setOnClickListener(new btnClickedListener());
 		//clearTxButton = (Button)findViewById(R.id.clearTx);
 		//clearTxButton.setOnClickListener(new btnClickedListener());
-		time = (TextView) findViewById(R.id.detected_time);
-		detected_num = (TextView) findViewById(R.id.detected_num);
+		time = (TextView) findViewById(R.id.detected_time_inout);
+		detected_num = (TextView) findViewById(R.id.detected_num_inout);
 //		sharp_num = (TextView) findViewById(R.id.sharp_num);
 		in_num_tv = (TextView) findViewById(R.id.in_num);
 		out_num_tv = (TextView) findViewById(R.id.out_num);
-		back = (Button) findViewById(R.id.backButton);
+		back = (Button) findViewById(R.id.backButton_inout);
 		back.setOnClickListener(new back_to_welcome());
-		disconnectButton = (Button) findViewById(R.id.disconnectButton);
+		disconnectButton = (Button) findViewById(R.id.disconnectButton_inout);
 		disconnectButton.setOnClickListener(new btnClickedListener());
 		//clearAll = (Button)findViewById(R.id.clearALL);
 		//clearAll.setOnClickListener(new btnClickedListener());
 		//txEdit = (EditText)findViewById(R.id.tx_history);
 		//rxEdit = (EditText)findViewById(R.id.rx_history);
 		//inputEdit = (EditText)findViewById(R.id.inputEdit);
-		connectDevices = (TextView) findViewById(R.id.connected_device);
-		logo = (ImageView) findViewById(R.id.logo);
-		logo.setBackgroundResource(R.drawable.title);
-		//AppPublic.linedataint=new ArrayList<Integer>();
+		connectDevices = (TextView) findViewById(R.id.connected_device_inout);
+		logo = (ImageView) findViewById(R.id.logo_inout);
+		logo.setBackgroundResource(R.drawable.title02);
+		//AppPublicInOut.linedataint=new ArrayList<Integer>();
 		//sv=(LineSurfaceView)findViewById(R.id.sv);
-		AppPublic.power_all_ch1_1 = 0;
-		AppPublic.power_all_ch2_1 = 0;
-		AppPublic.power_all_ch1_2 = 0;
-		AppPublic.power_all_ch2_2 = 0;
+		AppPublicInOut.power_all_ch1_1 = 0;
+		AppPublicInOut.power_all_ch2_1 = 0;
+		AppPublicInOut.power_all_ch1_2 = 0;
+		AppPublicInOut.power_all_ch2_2 = 0;
 		timer01 = new Timer();
 		handler01 = new Handler() {
 			public void handleMessage(Message msg) {
@@ -241,36 +241,36 @@ public class BluetoothComm_inout extends Activity {
 						renderer.removeAllRenderers();
 						int n1 = 0;
 						double temp = 0;
-						if (AppPublic.linedataint_ch1_1.size() > 0 && AppPublic.linedataint_ch1_1.size() <= 400) {
-							for (int i = 0; i < AppPublic.linedataint_ch1_1.size(); i++) {
-								//n1=AppPublic.linedataint_ch1_1.get(i)*100+AppPublic.linedataint_ch1_2.get(i);
+						if (AppPublicInOut.linedataint_ch1_1.size() > 0 && AppPublicInOut.linedataint_ch1_1.size() <= 400) {
+							for (int i = 0; i < AppPublicInOut.linedataint_ch1_1.size(); i++) {
+								//n1=AppPublicInOut.linedataint_ch1_1.get(i)*100+AppPublicInOut.linedataint_ch1_2.get(i);
 								//temp=3.412*Math.exp((0.0016*n1));
-								series1.add(i, AppPublic.power_ch1.get(i));
+								series1.add(i, AppPublicInOut.power_ch1.get(i));
 							}
 							;
-						} else if (AppPublic.linedataint_ch1_1.size() > 400) {
-							for (int i = AppPublic.linedataint_ch1_1.size() - 400; i < AppPublic.linedataint_ch1_1.size(); i++) {
-								//n1=AppPublic.linedataint_ch1_1.get(i)*100+AppPublic.linedataint_ch1_2.get(i);
+						} else if (AppPublicInOut.linedataint_ch1_1.size() > 400) {
+							for (int i = AppPublicInOut.linedataint_ch1_1.size() - 400; i < AppPublicInOut.linedataint_ch1_1.size(); i++) {
+								//n1=AppPublicInOut.linedataint_ch1_1.get(i)*100+AppPublicInOut.linedataint_ch1_2.get(i);
 								//temp=3.412*Math.exp((0.0016*n1));
-								series1.add((i - AppPublic.linedataint_ch1_1.size() + 400), AppPublic.power_ch1.get(i));
+								series1.add((i - AppPublicInOut.linedataint_ch1_1.size() + 400), AppPublicInOut.power_ch1.get(i));
 							}
 						}
 						;
-						if (AppPublic.linedataint_ch2_1.size() > 0 && AppPublic.linedataint_ch2_1.size() <= 400) {
-							for (int i = 0; i < AppPublic.linedataint_ch2_1.size(); i++) {
-								//n1=AppPublic.linedataint_ch2_1.get(i)*100+AppPublic.linedataint_ch2_2.get(i);
+						if (AppPublicInOut.linedataint_ch2_1.size() > 0 && AppPublicInOut.linedataint_ch2_1.size() <= 400) {
+							for (int i = 0; i < AppPublicInOut.linedataint_ch2_1.size(); i++) {
+								//n1=AppPublicInOut.linedataint_ch2_1.get(i)*100+AppPublicInOut.linedataint_ch2_2.get(i);
 								//temp=3.412*Math.exp((0.0016*n1));
-								series2.add(i, AppPublic.power_ch2.get(i));
-//                    		AppPublic.power_ch2.add(temp);
-//                    		Log.e("Test_out_ch2", AppPublic.power_ch2.get(i)+"");
+								series2.add(i, AppPublicInOut.power_ch2.get(i));
+//                    		AppPublicInOut.power_ch2.add(temp);
+//                    		Log.e("Test_out_ch2", AppPublicInOut.power_ch2.get(i)+"");
 							}
-						} else if (AppPublic.linedataint_ch2_1.size() > 400) {
-							for (int i = AppPublic.linedataint_ch2_1.size() - 400; i < AppPublic.linedataint_ch2_1.size(); i++) {
-								//n1=AppPublic.linedataint_ch2_1.get(i)*100+AppPublic.linedataint_ch2_2.get(i);
+						} else if (AppPublicInOut.linedataint_ch2_1.size() > 400) {
+							for (int i = AppPublicInOut.linedataint_ch2_1.size() - 400; i < AppPublicInOut.linedataint_ch2_1.size(); i++) {
+								//n1=AppPublicInOut.linedataint_ch2_1.get(i)*100+AppPublicInOut.linedataint_ch2_2.get(i);
 								//temp=3.412*Math.exp((0.0016*n1));
-								series2.add((i - AppPublic.linedataint_ch2_1.size() + 400), AppPublic.power_ch2.get(i));
-//                    			AppPublic.power_ch2.add(temp);
-//                    			Log.e("Test_out_ch2", AppPublic.power_ch2.get(i)+"");
+								series2.add((i - AppPublicInOut.linedataint_ch2_1.size() + 400), AppPublicInOut.power_ch2.get(i));
+//                    			AppPublicInOut.power_ch2.add(temp);
+//                    			Log.e("Test_out_ch2", AppPublicInOut.power_ch2.get(i)+"");
 							}
 						}
 						;
@@ -319,7 +319,7 @@ public class BluetoothComm_inout extends Activity {
 						Gview = ChartFactory.getCubeLineChartView(getApplicationContext(), dataset, renderer, 0.3f);
 						Gview.setBackgroundColor(Color.BLACK);
 						//移除原有的LinearLayout中的视图控件
-						layout = (LinearLayout) findViewById(R.id.lineChar);
+						layout = (LinearLayout) findViewById(R.id.lineChar_inout);
 						layout.removeAllViewsInLayout();
 						layout.setBackgroundResource(R.drawable.lightsteelblue);
 						layout.addView(Gview);
@@ -445,7 +445,7 @@ public class BluetoothComm_inout extends Activity {
 	private class btnClickedListener implements OnClickListener {
 		@Override
 		public void onClick(View v) {
-			if (v.getId() == R.id.disconnectButton) {
+			if (v.getId() == R.id.disconnectButton_inout) {
 				if (mCommService != null) {
 					mCommService.stop();
 					//timer01.cancel();
@@ -602,16 +602,16 @@ public class BluetoothComm_inout extends Activity {
 					}
 					//rxEdit.append(str);
 					//             mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
-					if (AppPublic.power_ch1.size() > 50000) {
-						AppPublic.linedataint_ch1_1 = new ArrayList<Integer>();
-						AppPublic.linedataint_ch1_2 = new ArrayList<Integer>();
-						AppPublic.linedataint_ch2_1 = new ArrayList<Integer>();
-						AppPublic.linedataint_ch2_2 = new ArrayList<Integer>();
-						AppPublic.countarray = new ArrayList<Integer>();
-						AppPublic.power_ch1 = new ArrayList<Double>();
-						AppPublic.power_ch2 = new ArrayList<Double>();
-						AppPublic.difference_ch1 = new ArrayList<Double>();
-						AppPublic.difference_ch2 = new ArrayList<Double>();
+					if (AppPublicInOut.power_ch1.size() > 50000) {
+						AppPublicInOut.linedataint_ch1_1 = new ArrayList<Integer>();
+						AppPublicInOut.linedataint_ch1_2 = new ArrayList<Integer>();
+						AppPublicInOut.linedataint_ch2_1 = new ArrayList<Integer>();
+						AppPublicInOut.linedataint_ch2_2 = new ArrayList<Integer>();
+						AppPublicInOut.countarray = new ArrayList<Integer>();
+						AppPublicInOut.power_ch1 = new ArrayList<Double>();
+						AppPublicInOut.power_ch2 = new ArrayList<Double>();
+						AppPublicInOut.difference_ch1 = new ArrayList<Double>();
+						AppPublicInOut.difference_ch2 = new ArrayList<Double>();
 					}
 					linedatachar1 = str.toCharArray();
 					//System.gc();
@@ -660,28 +660,28 @@ public class BluetoothComm_inout extends Activity {
 
 							//System.gc();
 							//将接收到的两个值放在list中
-							AppPublic.linedataint_ch1_1.add(temp_int1);
-							AppPublic.linedataint_ch1_2.add(temp_int2);
+							AppPublicInOut.linedataint_ch1_1.add(temp_int1);
+							AppPublicInOut.linedataint_ch1_2.add(temp_int2);
 
 							//对接收到的两个值进行转化，放在list中
 							int n1 = temp_int1 * 100 + temp_int2;
 							temp1 = 3.412 * Math.exp((0.0016 * n1));
 							int n2 = temp_int3 * 100 + temp_int4;
 							temp2 = 3.412 * Math.exp((0.0016 * n2));
-							AppPublic.power_ch1.add(temp1 + temp2);
+							AppPublicInOut.power_ch1.add(temp1 + temp2);
 
 							//System.gc();
-							AppPublic.linedataint_ch2_1.add(temp_int13);
-							AppPublic.linedataint_ch2_2.add(temp_int14);
+							AppPublicInOut.linedataint_ch2_1.add(temp_int13);
+							AppPublicInOut.linedataint_ch2_2.add(temp_int14);
 							int n3 = temp_int13 * 100 + temp_int14;
 							temp3 = 3.412 * Math.exp((0.0016 * n3));
 							int n4 = temp_int15 * 100 + temp_int16;
 							temp4 = 3.412 * Math.exp((0.0016 * n4));
-							AppPublic.power_ch2.add(temp3 + temp4);
+							AppPublicInOut.power_ch2.add(temp3 + temp4);
 							//Log.e("power_ch2", temp+"");
-							if (AppPublic.power_ch2.size() > 1) {
-								//int n2=AppPublic.linedataint_ch1_1.get(i-1)*100+AppPublic.linedataint_ch1_2.get(i-1);
-								AppPublic.difference_ch2.add(temp2 - AppPublic.power_ch2.get(AppPublic.power_ch2.size() - 2));
+							if (AppPublicInOut.power_ch2.size() > 1) {
+								//int n2=AppPublicInOut.linedataint_ch1_1.get(i-1)*100+AppPublicInOut.linedataint_ch1_2.get(i-1);
+								AppPublicInOut.difference_ch2.add(temp2 - AppPublicInOut.power_ch2.get(AppPublicInOut.power_ch2.size() - 2));
 								//System.gc();
 							}
 
@@ -699,30 +699,30 @@ public class BluetoothComm_inout extends Activity {
 							}
 
 							//如果list中有值
-							if (AppPublic.power_ch1.size() > 1) {
-								//int n2=AppPublic.linedataint_ch1_1.get(i-1)*100+AppPublic.linedataint_ch1_2.get(i-1);
+							if (AppPublicInOut.power_ch1.size() > 1) {
+								//int n2=AppPublicInOut.linedataint_ch1_1.get(i-1)*100+AppPublicInOut.linedataint_ch1_2.get(i-1);
 								//该list的最后一个元素减去前一个元素的值，又放在了list中
 								//前足传感器的值和上一个值的差值
-								AppPublic.difference_ch1.add(temp1 - AppPublic.power_ch1.get(AppPublic.power_ch1.size() - 2));
-								if (AppPublic.difference_ch1.size() > 1) {
-									if (AppPublic.difference_ch1.get(AppPublic.difference_ch1.size() - 2) < -2 && AppPublic.difference_ch1.get(AppPublic.difference_ch1.size() - 1) > -2 && temp1 < 10 && count > 18) {
+								AppPublicInOut.difference_ch1.add(temp1 - AppPublicInOut.power_ch1.get(AppPublicInOut.power_ch1.size() - 2));
+								if (AppPublicInOut.difference_ch1.size() > 1) {
+									if (AppPublicInOut.difference_ch1.get(AppPublicInOut.difference_ch1.size() - 2) < -2 && AppPublicInOut.difference_ch1.get(AppPublicInOut.difference_ch1.size() - 1) > -2 && temp1 < 10 && count > 18) {
 										detected_num_int = detected_num_int + 1;
 										if (isstart1 == false) {
 											isstart1 = true;
-											AppPublic.power_all_ch1_1 = 0;
-											AppPublic.power_all_ch2_1 = 0;
+											AppPublicInOut.power_all_ch1_1 = 0;
+											AppPublicInOut.power_all_ch2_1 = 0;
 										} else if (isstart1 == true) {
-											Log.e("Warning", "power_all_ch1__1" + "__" + AppPublic.power_all_ch1_1);
-											Log.e("Warning", "power_all_ch2__1" + "__" + AppPublic.power_all_ch2_1);
-											//boolean judge=(boolean)(((AppPublic.power_all_ch2_1/(AppPublic.power_all_ch1_1+AppPublic.power_all_ch2_1)))<(30/100));
-											if (((((AppPublic.power_all_ch1_1 - AppPublic.power_all_ch2_1) / (AppPublic.power_all_ch1_1 + AppPublic.power_all_ch2_1))) < (in_num))) {
+											Log.e("Warning", "power_all_ch1__1" + "__" + AppPublicInOut.power_all_ch1_1);
+											Log.e("Warning", "power_all_ch2__1" + "__" + AppPublicInOut.power_all_ch2_1);
+											//boolean judge=(boolean)(((AppPublicInOut.power_all_ch2_1/(AppPublicInOut.power_all_ch1_1+AppPublicInOut.power_all_ch2_1)))<(30/100));
+											if (((((AppPublicInOut.power_all_ch1_1 - AppPublicInOut.power_all_ch2_1) / (AppPublicInOut.power_all_ch1_1 + AppPublicInOut.power_all_ch2_1))) < (in_num))) {
 												mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
 												mMediaPlayer.start();
 												count = 0;
 												in_num_int = in_num_int + 1;
 												//isenable=false;
 												Log.e("Warning", "mediaplay");
-											} else if (((((AppPublic.power_all_ch1_1 - AppPublic.power_all_ch2_1) / (AppPublic.power_all_ch1_1 + AppPublic.power_all_ch2_1))) > (out_num))) {
+											} else if (((((AppPublicInOut.power_all_ch1_1 - AppPublicInOut.power_all_ch2_1) / (AppPublicInOut.power_all_ch1_1 + AppPublicInOut.power_all_ch2_1))) > (out_num))) {
 												mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
 												mMediaPlayer.start();
 												count = 0;
@@ -731,25 +731,25 @@ public class BluetoothComm_inout extends Activity {
 												Log.e("Warning", "mediaplay");
 											}
 											isstart1 = false;
-											AppPublic.power_all_ch1_1 = 0;
-											AppPublic.power_all_ch2_1 = 0;
+											AppPublicInOut.power_all_ch1_1 = 0;
+											AppPublicInOut.power_all_ch2_1 = 0;
 										}
 										if (isstart2 == false) {
 											isstart2 = true;
-											AppPublic.power_all_ch1_2 = 0;
-											AppPublic.power_all_ch2_2 = 0;
+											AppPublicInOut.power_all_ch1_2 = 0;
+											AppPublicInOut.power_all_ch2_2 = 0;
 										} else if (isstart2 == true) {
-											Log.e("Warning", "power_all_ch1__2" + "__" + AppPublic.power_all_ch1_2);
-											Log.e("Warning", "power_all_ch2__2" + "__" + AppPublic.power_all_ch2_2);
-											//boolean judge=(boolean)(((AppPublic.power_all_ch2_2/(AppPublic.power_all_ch1_2+AppPublic.power_all_ch2_2)))<(30/100));
-											if (((((AppPublic.power_all_ch1_2 - AppPublic.power_all_ch2_2) / (AppPublic.power_all_ch1_2 + AppPublic.power_all_ch2_2))) < (in_num))) {
+											Log.e("Warning", "power_all_ch1__2" + "__" + AppPublicInOut.power_all_ch1_2);
+											Log.e("Warning", "power_all_ch2__2" + "__" + AppPublicInOut.power_all_ch2_2);
+											//boolean judge=(boolean)(((AppPublicInOut.power_all_ch2_2/(AppPublicInOut.power_all_ch1_2+AppPublicInOut.power_all_ch2_2)))<(30/100));
+											if (((((AppPublicInOut.power_all_ch1_2 - AppPublicInOut.power_all_ch2_2) / (AppPublicInOut.power_all_ch1_2 + AppPublicInOut.power_all_ch2_2))) < (in_num))) {
 												mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
 												mMediaPlayer.start();
 												count = 0;
 												in_num_int = in_num_int + 1;
 												//isenable=false;
 												Log.e("Warning", "mediaplay");
-											} else if (((((AppPublic.power_all_ch1_2 - AppPublic.power_all_ch2_2) / (AppPublic.power_all_ch1_2 + AppPublic.power_all_ch2_2))) > (out_num))) {
+											} else if (((((AppPublicInOut.power_all_ch1_2 - AppPublicInOut.power_all_ch2_2) / (AppPublicInOut.power_all_ch1_2 + AppPublicInOut.power_all_ch2_2))) > (out_num))) {
 												mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
 												mMediaPlayer.start();
 												count = 0;
@@ -758,8 +758,8 @@ public class BluetoothComm_inout extends Activity {
 												Log.e("Warning", "mediaplay");
 											}
 											isstart2 = false;
-											AppPublic.power_all_ch1_2 = 0;
-											AppPublic.power_all_ch2_2 = 0;
+											AppPublicInOut.power_all_ch1_2 = 0;
+											AppPublicInOut.power_all_ch2_2 = 0;
 										}
 									}
 								}
@@ -767,12 +767,12 @@ public class BluetoothComm_inout extends Activity {
 							}
 						}
 						if (isstart1) {
-							AppPublic.power_all_ch1_1 = AppPublic.power_all_ch1_1 + temp1;
-							AppPublic.power_all_ch2_1 = AppPublic.power_all_ch2_1 + temp2;
+							AppPublicInOut.power_all_ch1_1 = AppPublicInOut.power_all_ch1_1 + temp1;
+							AppPublicInOut.power_all_ch2_1 = AppPublicInOut.power_all_ch2_1 + temp2;
 						}
 						if (isstart2) {
-							AppPublic.power_all_ch1_2 = AppPublic.power_all_ch1_2 + temp1;
-							AppPublic.power_all_ch2_2 = AppPublic.power_all_ch2_2 + temp2;
+							AppPublicInOut.power_all_ch1_2 = AppPublicInOut.power_all_ch1_2 + temp1;
+							AppPublicInOut.power_all_ch2_2 = AppPublicInOut.power_all_ch2_2 + temp2;
 						}
 					}
 					//System.gc();
