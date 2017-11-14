@@ -27,4 +27,15 @@
 
     />
 
+    <Button android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/leftRightButton"
+            android:textSize="12sp"
+            android:text="双下肢不等长检测"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+
+    />
+
 </LinearLayout>
