@@ -117,8 +117,8 @@
                     <TextView
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
-                            android:id="@+id/in_num_text"
-                            android:text="外翻次数:"
+                            android:id="@+id/left_num_text"
+                            android:text="左腿长次数:"
                             android:textSize="20sp"
                             android:layout_weight="1"
                             android:textColor="#000000"
@@ -126,7 +126,7 @@
                     <TextView
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
-                            android:id="@+id/in_num"
+                            android:id="@+id/left_num"
                             android:textSize="20sp"
                             android:layout_weight="5"
                             android:textColor="#000000"
@@ -139,8 +139,8 @@
                     <TextView
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
-                            android:id="@+id/out_num_text"
-                            android:text="内翻次数:"
+                            android:id="@+id/right_num_text"
+                            android:text="右腿长次数:"
                             android:textSize="20sp"
                             android:layout_weight="1"
                             android:textColor="#000000"
@@ -148,7 +148,7 @@
                     <TextView
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
-                            android:id="@+id/out_num"
+                            android:id="@+id/right_num"
                             android:textSize="20sp"
                             android:layout_weight="5"
                             android:textColor="#000000"

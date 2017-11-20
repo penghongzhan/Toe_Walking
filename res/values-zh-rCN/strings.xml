@@ -14,6 +14,9 @@
     <string name="clearTx">清空发送数据</string>
     <string name="clearRx">清空接收数据</string>
     <string name="disconnect">断开连接</string>
+    <string name="none_paired">没有配对的设备</string>
+    <string name="none_found">没有找到设备</string>
+    <string name="not_connected">还没有连接到设备</string>
     <string name="title_connecting">连接中...</string>
     <string name="title_connected_to">已连接: </string>
     <string name="title_not_connected">还未连接蓝牙设备</string>
@@ -21,6 +24,8 @@
     <string name="back">返回</string>
     <!-- 菜单 -->
     <string name="scan">搜索</string>
+    <string name="scan01">搜索左脚</string>
+    <string name="scan02">搜索右脚</string>
     <string name="discoverable">设备可检测</string>
     <string name="about">关于</string>
     <string name="exit">退出</string>

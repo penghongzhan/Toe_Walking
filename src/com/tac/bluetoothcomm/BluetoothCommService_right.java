@@ -15,13 +15,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-public class BluetoothCommService02 {
+public class BluetoothCommService_right {
 
     // Debugging
     private static final String TAG = "BluetoothComm";
     private static final boolean D = true;
 
-	private static final String NAME= "BluetoothComm";
+	private static final String NAME= "BluetoothComm_right";
 	//SPP协议UUID
 	private static final UUID SPP_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 	// Member fields
@@ -38,7 +38,7 @@ public class BluetoothCommService02 {
     public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
     public static final int STATE_CONNECTED = 3;  //已连接上远程设备
 
-    public BluetoothCommService02(Context context, Handler handler){
+    public BluetoothCommService_right(Context context, Handler handler){
     	mAdapter = BluetoothAdapter.getDefaultAdapter();
     	mHandler = handler;
     	mState = STATE_NONE;
@@ -258,7 +258,7 @@ public class BluetoothCommService02 {
 
                 // If a connection was accepted
                 if (socket != null) {
-                    synchronized (BluetoothCommService02.this) {
+                    synchronized (BluetoothCommService_right.this) {
                         switch (mState) {
                         case STATE_LISTEN:
                         case STATE_CONNECTING:
@@ -337,12 +337,12 @@ public class BluetoothCommService02 {
                     Log.e(TAG, "unable to close() socket during connection failure", e2);
                 }
                 // Start the service over to restart listening mode
-                BluetoothCommService02.this.start();
+                BluetoothCommService_right.this.start();
                 return;
             }
 
             // Reset the ConnectThread because we're done
-            synchronized (BluetoothCommService02.this) {
+            synchronized (BluetoothCommService_right.this) {
                 mConnectThread = null;
             }
 
@@ -408,6 +408,7 @@ public class BluetoothCommService02 {
                     connectionLost();
                     break;
                 } catch (InterruptedException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
                 

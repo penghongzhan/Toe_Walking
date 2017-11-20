@@ -22,6 +22,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.*;
 import com.ronoid.bluetoothcomm.R;
+import com.tac.bluetoothcomm.leftright.DeviceListActivity;
+import com.tac.bluetoothcomm.leftright.DeviceListActivity2;
 import com.tac.db.DatabaseHelper;
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -40,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
 
 @SuppressLint({"SdCardPath", "SimpleDateFormat"})
 public class BluetoothComm_leftRight extends Activity {
@@ -62,7 +65,8 @@ public class BluetoothComm_leftRight extends Activity {
 	public static final String TOAST = "toast";
 	private static final Context context = null;
 	//蓝牙设备
-	private BluetoothDevice device = null;
+	private BluetoothDevice device01 = null;
+	private BluetoothDevice device02 = null;
 
 	private EditText txEdit;
 	private EditText rxEdit;
@@ -82,7 +86,12 @@ public class BluetoothComm_leftRight extends Activity {
 	//本地蓝牙适配器
 	private BluetoothAdapter bluetooth;
 	//创建一个蓝牙串口服务对象
-	private BluetoothCommService mCommService = null;
+	private BluetoothCommService_left mCommService_left = null;
+	private BluetoothCommService_right mCommService_right = null;
+	private ArrayBlockingQueue<String> mCommService_left_queue = new ArrayBlockingQueue<String>(120);
+	private ArrayBlockingQueue<String> mCommService_right_queue = new ArrayBlockingQueue<String>(120);
+	private boolean isLeftGetData = false;
+	private boolean isRightGetData = false;
 
 	private StringBuffer mOutStringBuffer = new StringBuffer("");
 
@@ -110,7 +119,8 @@ public class BluetoothComm_leftRight extends Activity {
 	private boolean isstart1 = false;
 	private boolean isstart2 = true;
 	private boolean isopen = false;
-	private boolean istiming = false;
+	private boolean istiming_left = false;
+	private boolean istiming_right = false;
 	/** 标识第一路蓝牙是否链接成功 */
 	private boolean isBlu01 = false;
 	/** 标识第二路蓝牙是否链接成功 */
@@ -121,17 +131,19 @@ public class BluetoothComm_leftRight extends Activity {
 	private static String test_sex;
 	private String value;
 //	private double value_num;
-	private double in_num;
-	private double out_num;
+	private double smaller;
+	private double bigger;
 	private String file_name = null;
-	private FileOutputStream outStream;
-	private OutputStreamWriter writer;
+	private FileOutputStream outStream_left;
+	private FileOutputStream outStream_right;
+	private OutputStreamWriter writer_left;
+	private OutputStreamWriter writer_right;
 	private ArrayList<Integer> count2 = new ArrayList<Integer>();
 	private TextView time;
 	private TextView detected_num;
 //	private TextView sharp_num;
-	private TextView in_num_tv;
-	private TextView out_num_tv;
+	private TextView left_num_tv;
+	private TextView right_num_tv;
 	private double time_stop = 0;
 	private double time_start = 0;
 	private long time_on_h = 0;
@@ -139,9 +151,49 @@ public class BluetoothComm_leftRight extends Activity {
 	private long time_on_s = 0;
 	private int detected_num_int = 0;
 //	private int sharp_num_int = 0;
-	private int in_num_int = 0;
-	private int out_num_int = 0;
+	private int left_num_int = 0;
+	private int right_num_int = 0;
 	private Button back;
+
+	public static final int ONE = 0xa21;
+	public static final int TWO = 0xa22;
+	public static final int THREE = 0xa23;
+	public static final int FOUR = 0xa24;
+	public static final int FIVE = 0xa25;
+
+	private Handler returnMessage=new Handler(){
+
+		@Override
+		public void handleMessage(Message msg)
+		{
+			// TODO: Implement this method
+
+			int device = msg.what;
+			String address =String.valueOf((String) msg.obj);
+			super.handleMessage(msg);
+			switch(device){
+				case ONE:
+					Log.i("devicelist","收到设备1返回值");
+					Log.i("地址",address);
+					// Get the BLuetoothDevice object
+					BluetoothDevice device1 = bluetooth.getRemoteDevice(address);
+					// Attempt to connect to the device
+					mCommService_left.connect(device1);
+					break;
+				case TWO:
+					// Get the BLuetoothDevice object
+					BluetoothDevice device2 = bluetooth.getRemoteDevice(address);
+					// Attempt to connect to the device
+					mCommService_right.connect(device2);
+					break;
+
+				default:
+
+					break;
+			}
+		}
+
+	};
 
 	/**
 	 * Called when the activity is first created.
@@ -151,6 +203,8 @@ public class BluetoothComm_leftRight extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_leftright);
+		DeviceListActivity.DoMsg(returnMessage);
+		DeviceListActivity2.DoMsg(returnMessage);
 		SysApplication.getInstance().addActivity(this);
 		Intent intent = getIntent();
 		test_name = intent.getStringExtra("name");
@@ -170,10 +224,14 @@ public class BluetoothComm_leftRight extends Activity {
 			if (!file.exists()) {
 				file.mkdir();
 			}
-			String name = "/sdcard/toe_walking/" + file_name + "_sharp.txt";
+			String name_left = "/sdcard/toe_walking/" + file_name + "_left.txt";
+			String name_right = "/sdcard/toe_walking/" + file_name + "_right.txt";
 			if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-				outStream = new FileOutputStream(name, true);
-				writer = new OutputStreamWriter(outStream, "UTF-8");
+				outStream_left = new FileOutputStream(name_left, true);
+				writer_left = new OutputStreamWriter(outStream_left, "UTF-8");
+
+				outStream_right = new FileOutputStream(name_right, true);
+				writer_right = new OutputStreamWriter(outStream_right, "UTF-8");
 			} else {
 				Toast.makeText(context, "sd卡不可用请检查sd卡的状态", Toast.LENGTH_LONG).show();
 			}
@@ -183,8 +241,8 @@ public class BluetoothComm_leftRight extends Activity {
 		}
 //		value_num = (it / 100);
 //		value_num = 0.3;
-		in_num = -0.3;
-		out_num = 0.12;
+		smaller = 0.4;
+		bigger = 0.6;
 //		Log.e("Test_out_ch2", value_num + "");
 		//获得控件
 		//sendButton = (Button)findViewById(R.id.sendButton);
@@ -196,8 +254,8 @@ public class BluetoothComm_leftRight extends Activity {
 		time = (TextView) findViewById(R.id.detected_time_leftright);
 		detected_num = (TextView) findViewById(R.id.detected_num_leftright);
 //		sharp_num = (TextView) findViewById(R.id.sharp_num);
-		in_num_tv = (TextView) findViewById(R.id.in_num);
-		out_num_tv = (TextView) findViewById(R.id.out_num);
+		left_num_tv = (TextView) findViewById(R.id.left_num);
+		right_num_tv = (TextView) findViewById(R.id.right_num);
 		back = (Button) findViewById(R.id.backButton_leftright);
 		back.setOnClickListener(new back_to_welcome());
 		disconnectButton = (Button) findViewById(R.id.disconnectButton_leftright);
@@ -217,14 +275,19 @@ public class BluetoothComm_leftRight extends Activity {
 		AppPublicLeftRight.power_all_ch2_1 = 0;
 		AppPublicLeftRight.power_all_ch1_2 = 0;
 		AppPublicLeftRight.power_all_ch2_2 = 0;
+		/** 用于更新界面的定时器 */
 		timer01 = new Timer();
+		/** 更新界面的处理逻辑，定时器会定时触发 */
 		handler01 = new Handler() {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 					case 1: {
+//						if (!isRightGetData || !isLeftGetData) {
+//							return;
+//						}
 						DecimalFormat nf = new DecimalFormat("00");
 						DecimalFormat nf1 = new DecimalFormat("00000");
-						if (istiming) {
+						if (istiming_left && istiming_right) {
 							time_stop = SystemClock.elapsedRealtime();
 							//time_on_h=(long)(time_stop-time_start)/3600000;
 							time_on_m = (long) (time_stop - time_start) / 60000;
@@ -233,8 +296,8 @@ public class BluetoothComm_leftRight extends Activity {
 						time.setText("" + nf.format(time_on_m) + ":" + nf.format(time_on_s));
 						detected_num.setText("" + nf1.format(detected_num_int) + "次");
 //						sharp_num.setText("" + nf1.format(sharp_num_int) + "次");
-						in_num_tv.setText("" + nf1.format(in_num_int) + "次");
-						out_num_tv.setText("" + nf1.format(out_num_int) + "次");
+						left_num_tv.setText("" + nf1.format(left_num_int) + "次");
+						right_num_tv.setText("" + nf1.format(right_num_int) + "次");
 						XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
 						// 2,进行显示
 						XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
@@ -339,6 +402,7 @@ public class BluetoothComm_leftRight extends Activity {
 			}
 
 		};
+		/** 定时器的执行逻辑 */
 		task01 = new TimerTask() {
 
 			public void run() {
@@ -366,8 +430,12 @@ public class BluetoothComm_leftRight extends Activity {
 			//    		Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 //    		startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
 		} else {
-			if (mCommService == null) {
-				mCommService = new BluetoothCommService(this, mHandler);
+			/** 该activity初始化完成的时候，会创建两个service对象 */
+			if (mCommService_left == null) {
+				mCommService_left = new BluetoothCommService_left(this, mHandler_left);
+			}
+			if (mCommService_right == null) {
+				mCommService_right = new BluetoothCommService_right(this, mHandler_right);
 			}
 		}
 	}
@@ -375,13 +443,26 @@ public class BluetoothComm_leftRight extends Activity {
 	@Override
 	protected synchronized void onResume() {
 		super.onResume();
-		if (mCommService != null) {
-			// Only if the state is STATE_NONE, do we know that we haven't started already
-			if (mCommService.getState() == BluetoothCommService.STATE_NONE) {
-				// Start the Bluetooth services，开启监听线程
-				mCommService.start();
-			}
-		}
+//		/** 这里执行的是连接蓝牙设备的代码，所以两个service只能执行一个 */
+//		if (!mCommService_left_status) {
+//			/** 如果第一个蓝牙设备没有连接，进行连接 */
+//			if (mCommService_left != null) {
+//				// Only if the state is STATE_NONE, do we know that we haven't started already
+//				if (mCommService_left.getState() == BluetoothCommService.STATE_NONE) {
+//					// Start the Bluetooth services，开启监听线程
+//					mCommService_left.start();
+//					mCommService_left_status = true;
+//				}
+//			}
+//		} else if (!mCommService_right_status) {
+//			/** 如果第二个蓝牙设备没有连接，那么进行连接 */
+//			if (mCommService_right != null) {
+//				if (mCommService_right.getState() == BluetoothCommService.STATE_NONE){
+//					mCommService_right.start();
+//					mCommService_right_status = true;
+//				}
+//			}
+//		}
 	}
 
 	@Override
@@ -404,82 +485,33 @@ public class BluetoothComm_leftRight extends Activity {
 	public void onDestroy() {
 		super.onDestroy();
 		// Stop the Bluetooth chat services
-		if (mCommService != null) mCommService.stop();
+		if (mCommService_left != null) mCommService_left.stop();
+		if (mCommService_right != null) mCommService_right.stop();
 		if (D) Log.e(TAG, "--- ON DESTROY ---");
 		//SysApplication.getInstance().exit();
 		try {
-			writer.close();
-			outStream.close();
+			writer_left.close();
+			outStream_left.close();
+
+			writer_right.close();
+			outStream_right.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}//记得关闭
-	}
-
-	/**
-	 * onActivityResult方法，当启动startActivityForResult返回之后调用，
-	 * 根据用户的操作来执行相应的操作
-	 */
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode) {
-			case REQUEST_ENABLE_BT:
-				if (resultCode == Activity.RESULT_OK) {
-					if (D) Log.d(TAG, "打开蓝牙设备");
-					Toast.makeText(this, "成功打开蓝牙", Toast.LENGTH_SHORT).show();
-				} else {
-					if (D) Log.d(TAG, "不允许打开蓝牙设备");
-					Toast.makeText(this, "不能打开蓝牙,程序即将关闭", Toast.LENGTH_SHORT).show();
-					finish();//用户不打开设备，程序结束
-				}
-				break;
-			case REQUEST_CONNECT_DEVICE:
-				/** 用户点了要连接的蓝牙设备之后，这里就会获得该蓝牙设备的地址，进行后续的链接 */
-				// When DeviceListActivity returns with a device to connect
-				if (resultCode == Activity.RESULT_OK) {//用户选择连接的设备
-					// Get the device MAC address
-					String address = data.getExtras()
-											 .getString(ScanDeviceActivity.EXTRA_DEVICE_ADDRESS);
-					// Get the BLuetoothDevice object
-					device = bluetooth.getRemoteDevice(address);
-					//尝试连接设备
-					mCommService.connect(device);
-				}
-				break;
-		}
-		return;
 	}
 
 	private class btnClickedListener implements OnClickListener {
 		@Override
 		public void onClick(View v) {
 			if (v.getId() == R.id.disconnectButton_leftright) {
-				if (mCommService != null) {
-					mCommService.stop();
+				if (mCommService_left != null) {
+					mCommService_left.stop();
 					//timer01.cancel();
 				}
+				if (mCommService_right != null) {
+					mCommService_right.stop();
+				}
 			}
-//			if(v.getId() == R.id.sendButton) {
-//				if(device == null){
-//					Toast.makeText(BluetoothComm.this, "请连接设备！", Toast.LENGTH_LONG).show();
-//					inputEdit.setText("");
-//				}
-//				else {
-//					String txString = inputEdit.getText()+"";
-//					//inputEdit.setText("");
-//					txEdit.append(txString);
-//					sendMessage(txString);
-//				}
-//			} else if(v.getId() == R.id.clearRx){
-//				rxEdit.setText("");
-//			} else if(v.getId() == R.id.clearTx){
-//				txEdit.setText("");
-//			} else if(v.getId() == R.id.disconnectButton){
-//				if(mCommService!=null){
-//					mCommService.stop();
-//					timer01.cancel();
-//				}
-//			} else if(v.getId() ==R.id.clearALL){
-//				inputEdit.setText("");
-//			}
 		}
 	}
 
@@ -497,7 +529,7 @@ public class BluetoothComm_leftRight extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.option_menu, menu);
+		inflater.inflate(R.menu.option_menu_leftright, menu);
 		return true;
 	}
 
@@ -505,10 +537,15 @@ public class BluetoothComm_leftRight extends Activity {
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.scan:
+			case R.id.scan_left:
 				// Launch the ScanDeviceActivity to see devices and do scan
-				Intent serverIntent = new Intent(this, ScanDeviceActivity.class);
-				startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+				Intent serverIntent_left = new Intent(this, DeviceListActivity.class);
+				startActivityForResult(serverIntent_left, REQUEST_CONNECT_DEVICE);
+				return true;
+			case R.id.scan_right:
+				// Launch the ScanDeviceActivity to see devices and do scan
+				Intent serverIntent_right = new Intent(this, DeviceListActivity2.class);
+				startActivityForResult(serverIntent_right, REQUEST_CONNECT_DEVICE);
 				return true;
 			case R.id.discoverable:
 				ensureDiscoverable();
@@ -518,8 +555,11 @@ public class BluetoothComm_leftRight extends Activity {
 				startActivity(intent);
 				return true;
 			case R.id.exit:
-				if (mCommService != null) {
-					mCommService.stop();
+				if (mCommService_left != null) {
+					mCommService_left.stop();
+				}
+				if (mCommService_right != null) {
+					mCommService_right.stop();
 				}
 				if (bluetooth == null) {
 					bluetooth.enable();
@@ -527,8 +567,8 @@ public class BluetoothComm_leftRight extends Activity {
 //	        	try {
 //	        		DecimalFormat nf = new DecimalFormat("00");
 //	                DecimalFormat nf1 = new DecimalFormat("00000");
-//					writer.write("检测时间："+nf.format(time_on_m)+":"+nf.format(time_on_s)+"检测次数:"+nf1.format(detected_num_int)+"次"+"尖足次数:"+nf1.format(sharp_num_int)+"次");
-//	        	  	writer.flush();
+//					writer_left.write("检测时间："+nf.format(time_on_m)+":"+nf.format(time_on_s)+"检测次数:"+nf1.format(detected_num_int)+"次"+"尖足次数:"+nf1.format(sharp_num_int)+"次");
+//	        	  	writer_left.flush();
 //	        	  	//count=count+1;
 //				} catch (IOException e) {
 //					e.printStackTrace();
@@ -541,89 +581,21 @@ public class BluetoothComm_leftRight extends Activity {
 		return false;
 	}
 
-	/**
-	 * Sends a message.
-	 *
-	 * @param message A string of text to send.
-	 */
-	private void sendMessage(String message) {
-		//没有连接设备，不能发送
-		if (mCommService.getState() != BluetoothCommService.STATE_CONNECTED) {
-			Toast.makeText(this, R.string.nodevice, Toast.LENGTH_SHORT).show();
-			return;
-		}
-		// Check that there's actually something to send
-		if (message.length() > 0) {
-			// Get the message bytes and tell the BluetoothChatService to write
-			byte[] send = message.getBytes();
-			mCommService.write(send);
-
-			// Reset out string buffer to zero and clear the edit text field
-			mOutStringBuffer.setLength(0);
-		}
-	}
-
-	// The Handler that gets information back from the BluetoothChatService
 	private final Handler mHandler = new Handler() {
-		String str;
 
 		@Override
 		public void handleMessage(Message msg) {
-			switch (msg.what) {
-				case MESSAGE_STATE_CHANGE:
-					if (D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
-					switch (msg.arg1) {
-						case BluetoothCommService.STATE_CONNECTED:
-							if (!isBlu01) {
-								/** 如果第一路蓝牙没有连接 */
-								connectDevices.setText(R.string.title_connected_to);
-								connectDevices.append(mConnectedDeviceName);
-								isBlu01 = true;
-							} else if (!isBlu02){
-								/** 如果第二路蓝牙没有连接 */
-								connectDevices02.setText(R.string.title_connected_to);
-								connectDevices02.append(mConnectedDeviceName);
-								isBlu02 = true;
-							}
-							if (isBlu01 && isBlu02) {
-								time_start = SystemClock.elapsedRealtime();
-								istiming = true;
-							}
-							//    mConversationArrayAdapter.clear();
-							break;
-						case BluetoothCommService.STATE_CONNECTING:
-							connectDevices.setText(R.string.title_connecting);
-							break;
-						case BluetoothCommService.STATE_LISTEN:
-						case BluetoothCommService.STATE_NONE:
-							if (isBlu01) {
-								/** 如果第一路连接着，状态改成连接断开 */
-								connectDevices.setText(R.string.title_not_connected);
-							} else if (isBlu02) {
-								/** 如果第二路连接着，状态改成连接断开 */
-								connectDevices02.setText(R.string.title_not_connected);
-							}
-							istiming = false;
-							break;
-					}
-					break;
-				case MESSAGE_WRITE:
-					byte[] writeBuf = (byte[]) msg.obj;
-					// construct a string from the buffer
-					//  String writeMessage = new String(writeBuf);
-					//   mConversationArrayAdapter.add("Me:  " + writeMessage);
-					break;
-				case MESSAGE_READ:
-					byte[] readBuf = (byte[]) msg.obj;
-					// construct a string from the valid bytes in the buffer
-					String readMessage = new String(readBuf, 0, msg.arg1);
-					StringBuilder stringBuilder = new StringBuilder("");
-					if (msg.arg1 > 0) {
-						str = bytesToHexString(readBuf);
-						//Log.e(TAG, str);
-					}
-					//rxEdit.append(str);
-					//             mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
+			int leftSize = mCommService_left_queue.size();
+			int rightSize = mCommService_right_queue.size();
+			if (leftSize > 0 && rightSize > 0) {
+//				int size = leftSize < rightSize ? leftSize : rightSize;
+//				for (int i=0; i< size; i++) {
+					count++;
+					String leftValue = mCommService_left_queue.poll();
+					String[] leftSplit = leftValue.split("\\+");
+					String rightValue = mCommService_right_queue.poll();
+					String[] rightSplit = rightValue.split("\\+");
+
 					if (AppPublicLeftRight.power_ch1.size() > 50000) {
 						AppPublicLeftRight.linedataint_ch1_1 = new ArrayList<Integer>();
 						AppPublicLeftRight.linedataint_ch1_2 = new ArrayList<Integer>();
@@ -635,6 +607,158 @@ public class BluetoothComm_leftRight extends Activity {
 						AppPublicLeftRight.difference_ch1 = new ArrayList<Double>();
 						AppPublicLeftRight.difference_ch2 = new ArrayList<Double>();
 					}
+					//System.gc();
+					/** 第一个传感器的值 */
+					double temp1 = Double.valueOf(leftSplit[0]);
+					/** 第二个传感器的值 */
+					double temp2 = Double.valueOf(leftSplit[1]);
+					AppPublicLeftRight.linedataint_ch1_1.add(Integer.valueOf(leftSplit[2]));
+					AppPublicLeftRight.linedataint_ch1_2.add(Integer.valueOf(leftSplit[3]));
+					//对接收到的两个值进行转化，放在list中
+					AppPublicLeftRight.power_ch1.add(temp1 + temp2);
+
+					/** 第三个传感器的值 */
+					double temp3 = Double.valueOf(rightSplit[0]);
+					/** 第四个传感器的值 */
+					double temp4 = Double.valueOf(rightSplit[1]);
+					AppPublicLeftRight.linedataint_ch2_1.add(Integer.valueOf(rightSplit[2]));
+					AppPublicLeftRight.linedataint_ch2_2.add(Integer.valueOf(rightSplit[3]));
+					AppPublicLeftRight.power_ch2.add(temp3 + temp4);
+
+					//Log.e("power_ch2", temp+"");
+					if (AppPublicLeftRight.power_ch2.size() > 1) {
+						//int n2=AppPublicLeftRight.linedataint_ch1_1.get(i-1)*100+AppPublicLeftRight.linedataint_ch1_2.get(i-1);
+						AppPublicLeftRight.difference_ch2.add(temp2 - AppPublicLeftRight.power_ch2.get(AppPublicLeftRight.power_ch2.size() - 2));
+						//System.gc();
+					}
+
+					//如果list中有值
+					if (AppPublicLeftRight.power_ch1.size() > 1) {
+						//int n2=AppPublicLeftRight.linedataint_ch1_1.get(i-1)*100+AppPublicLeftRight.linedataint_ch1_2.get(i-1);
+						//该list的最后一个元素减去前一个元素的值，又放在了list中
+						//前足传感器的值和上一个值的差值
+						AppPublicLeftRight.difference_ch1.add(temp1 - AppPublicLeftRight.power_ch1.get(AppPublicLeftRight.power_ch1.size() - 2));
+						if (AppPublicLeftRight.difference_ch1.size() > 1) {
+							if (AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 2) < -2 && AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 1) > -2 && temp1 < 10 && count > 18) {
+								detected_num_int = detected_num_int + 1;
+								if (isstart1 == false) {
+									isstart1 = true;
+									AppPublicLeftRight.power_all_ch1_1 = 0;
+									AppPublicLeftRight.power_all_ch2_1 = 0;
+								} else if (isstart1 == true) {
+									Log.e("Warning", "power_all_ch1__1" + "__" + AppPublicLeftRight.power_all_ch1_1);
+									Log.e("Warning", "power_all_ch2__1" + "__" + AppPublicLeftRight.power_all_ch2_1);
+									//boolean judge=(boolean)(((AppPublicLeftRight.power_all_ch2_1/(AppPublicLeftRight.power_all_ch1_1+AppPublicLeftRight.power_all_ch2_1)))<(30/100));
+									if ((((AppPublicLeftRight.power_all_ch1_1 / (AppPublicLeftRight.power_all_ch1_1 + AppPublicLeftRight.power_all_ch2_1))) < (smaller))) {
+										mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
+										mMediaPlayer.start();
+										count = 0;
+										left_num_int = left_num_int + 1;
+										//isenable=false;
+										Log.e("Warning", "mediaplay");
+									} else if ((((AppPublicLeftRight.power_all_ch1_1 / (AppPublicLeftRight.power_all_ch1_1 + AppPublicLeftRight.power_all_ch2_1))) > (bigger))) {
+										mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
+										mMediaPlayer.start();
+										count = 0;
+										right_num_int = right_num_int + 1;
+										//isenable=false;
+										Log.e("Warning", "mediaplay");
+									}
+									isstart1 = false;
+									AppPublicLeftRight.power_all_ch1_1 = 0;
+									AppPublicLeftRight.power_all_ch2_1 = 0;
+								}
+								if (isstart2 == false) {
+									isstart2 = true;
+									AppPublicLeftRight.power_all_ch1_2 = 0;
+									AppPublicLeftRight.power_all_ch2_2 = 0;
+								} else if (isstart2 == true) {
+									Log.e("Warning", "power_all_ch1__2" + "__" + AppPublicLeftRight.power_all_ch1_2);
+									Log.e("Warning", "power_all_ch2__2" + "__" + AppPublicLeftRight.power_all_ch2_2);
+									//boolean judge=(boolean)(((AppPublicLeftRight.power_all_ch2_2/(AppPublicLeftRight.power_all_ch1_2+AppPublicLeftRight.power_all_ch2_2)))<(30/100));
+									if ((((AppPublicLeftRight.power_all_ch1_2 / (AppPublicLeftRight.power_all_ch1_2 + AppPublicLeftRight.power_all_ch2_2))) < (smaller))) {
+										mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
+										mMediaPlayer.start();
+										count = 0;
+										left_num_int = left_num_int + 1;
+										//isenable=false;
+										Log.e("Warning", "mediaplay");
+									} else if ((((AppPublicLeftRight.power_all_ch1_2 / (AppPublicLeftRight.power_all_ch1_2 + AppPublicLeftRight.power_all_ch2_2))) > (bigger))) {
+										mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
+										mMediaPlayer.start();
+										count = 0;
+										right_num_int = right_num_int + 1;
+										//isenable=false;
+										Log.e("Warning", "mediaplay");
+									}
+									isstart2 = false;
+									AppPublicLeftRight.power_all_ch1_2 = 0;
+									AppPublicLeftRight.power_all_ch2_2 = 0;
+								}
+							}
+						}
+						//System.gc();
+					}
+					if (isstart1) {
+						AppPublicLeftRight.power_all_ch1_1 = AppPublicLeftRight.power_all_ch1_1 + temp1;
+						AppPublicLeftRight.power_all_ch2_1 = AppPublicLeftRight.power_all_ch2_1 + temp2;
+					}
+					if (isstart2) {
+						AppPublicLeftRight.power_all_ch1_2 = AppPublicLeftRight.power_all_ch1_2 + temp1;
+						AppPublicLeftRight.power_all_ch2_2 = AppPublicLeftRight.power_all_ch2_2 + temp2;
+					}
+//				}
+			}
+		}
+	};
+
+	// The Handler that gets information back from the BluetoothChatService
+	private final Handler mHandler_left = new Handler() {
+		String str;
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+				case MESSAGE_STATE_CHANGE:
+					if (D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+					switch (msg.arg1) {
+						case BluetoothCommService_left.STATE_CONNECTED:
+							connectDevices.setText(R.string.title_connected_to);
+							connectDevices.append(mConnectedDeviceName);
+							time_start = SystemClock.elapsedRealtime();
+							istiming_left = true;
+							if (!isLeftGetData) {
+								isLeftGetData = true;
+							}
+							//    mConversationArrayAdapter.clear();
+							break;
+						case BluetoothCommService_left.STATE_CONNECTING:
+							connectDevices.setText(R.string.title_connecting);
+							break;
+						case BluetoothCommService_left.STATE_LISTEN:
+						case BluetoothCommService_left.STATE_NONE:
+							connectDevices.setText(R.string.title_not_connected);
+							istiming_left = false;
+							break;
+					}
+					break;
+				case MESSAGE_WRITE:
+					byte[] writeBuf = (byte[]) msg.obj;
+					// construct a string from the buffer
+					//  String writeMessage = new String(writeBuf);
+					//   mConversationArrayAdapter.add("Me:  " + writeMessage);
+					break;
+				case MESSAGE_READ:
+
+					byte[] readBuf = (byte[]) msg.obj;
+					// construct a string from the valid bytes in the buffer
+					String readMessage = new String(readBuf, 0, msg.arg1);
+					StringBuilder stringBuilder = new StringBuilder("");
+					if (msg.arg1 > 0) {
+						str = bytesToHexString(readBuf);
+						//Log.e(TAG, str);
+					}
+
 					linedatachar1 = str.toCharArray();
 					//System.gc();
 					int length = 40 * 2;
@@ -657,143 +781,86 @@ public class BluetoothComm_leftRight extends Activity {
 						String stemp80 = String.valueOf(linedatachar1[j + 79]);
 						double temp1 = 0;
 						double temp2 = 0;
-						double temp3 = 0;
-						double temp4 = 0;
 						if ("5".equals(stemp1) && "5".equals(stemp2)
 									&& "A".equals(stemp3) && "A".equals(stemp4)
 									&& "F".equals(stemp75) && "F".equals(stemp76)
 									&& "F".equals(stemp77) && "F".equals(stemp78)
 									&& "F".equals(stemp79) && "F".equals(stemp80)) {
-							//传感器3
-							int temp_int1 = Integer.parseInt(String.valueOf(linedatachar1[j + 48]) + String.valueOf(linedatachar1[j + 49]), 16);
-							int temp_int2 = Integer.parseInt(String.valueOf(linedatachar1[j + 50]) + String.valueOf(linedatachar1[j + 51]), 16);
-
-							//传感器5
-							int temp_int3 = Integer.parseInt(String.valueOf(linedatachar1[j + 56]) + String.valueOf(linedatachar1[j + 57]), 16);
-							int temp_int4 = Integer.parseInt(String.valueOf(linedatachar1[j + 58]) + String.valueOf(linedatachar1[j + 59]), 16);
-
-							//传感器4
-							int temp_int13 = Integer.parseInt(String.valueOf(linedatachar1[j + 52]) + String.valueOf(linedatachar1[j + 53]), 16);
-							int temp_int14 = Integer.parseInt(String.valueOf(linedatachar1[j + 54]) + String.valueOf(linedatachar1[j + 55]), 16);
-
-							//传感器6
-							int temp_int15 = Integer.parseInt(String.valueOf(linedatachar1[j + 60]) + String.valueOf(linedatachar1[j + 61]), 16);
-							int temp_int16 = Integer.parseInt(String.valueOf(linedatachar1[j + 62]) + String.valueOf(linedatachar1[j + 63]), 16);
-
-							//System.gc();
-							//将接收到的两个值放在list中
-							AppPublicLeftRight.linedataint_ch1_1.add(temp_int1);
-							AppPublicLeftRight.linedataint_ch1_2.add(temp_int2);
-
-							//对接收到的两个值进行转化，放在list中
-							int n1 = temp_int1 * 100 + temp_int2;
-							temp1 = 3.412 * Math.exp((0.0016 * n1));
-							int n2 = temp_int3 * 100 + temp_int4;
-							temp2 = 3.412 * Math.exp((0.0016 * n2));
-							AppPublicLeftRight.power_ch1.add(temp1 + temp2);
-
-							//System.gc();
-							AppPublicLeftRight.linedataint_ch2_1.add(temp_int13);
-							AppPublicLeftRight.linedataint_ch2_2.add(temp_int14);
-							int n3 = temp_int13 * 100 + temp_int14;
-							temp3 = 3.412 * Math.exp((0.0016 * n3));
-							int n4 = temp_int15 * 100 + temp_int16;
-							temp4 = 3.412 * Math.exp((0.0016 * n4));
-							AppPublicLeftRight.power_ch2.add(temp3 + temp4);
-							//Log.e("power_ch2", temp+"");
-							if (AppPublicLeftRight.power_ch2.size() > 1) {
-								//int n2=AppPublicLeftRight.linedataint_ch1_1.get(i-1)*100+AppPublicLeftRight.linedataint_ch1_2.get(i-1);
-								AppPublicLeftRight.difference_ch2.add(temp2 - AppPublicLeftRight.power_ch2.get(AppPublicLeftRight.power_ch2.size() - 2));
-								//System.gc();
-							}
+							/** 传感器01 第一个值 */
+							int sensor01_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 40]) + String.valueOf(linedatachar1[j + 41]), 16);
+							/** 传感器01 第二个值 */
+							int sensor01_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 42]) + String.valueOf(linedatachar1[j + 43]), 16);
+							/** 传感器02 第一个值 */
+							int sensor02_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 44]) + String.valueOf(linedatachar1[j + 45]), 16);
+							/** 传感器02 第二个值 */
+							int sensor02_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 46]) + String.valueOf(linedatachar1[j + 47]), 16);
+							/** 传感器03 第一个值 */
+							int sensor03_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 48]) + String.valueOf(linedatachar1[j + 49]), 16);
+							/** 传感器03 第二个值 */
+							int sensor03_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 50]) + String.valueOf(linedatachar1[j + 51]), 16);
+							/** 传感器04 第一个值 */
+							int sensor04_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 52]) + String.valueOf(linedatachar1[j + 53]), 16);
+							/** 传感器04 第二个值 */
+							int sensor04_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 54]) + String.valueOf(linedatachar1[j + 55]), 16);
+							/** 传感器05 第一个值 */
+							int sensor05_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 56]) + String.valueOf(linedatachar1[j + 57]), 16);
+							/** 传感器05 第二个值 */
+							int sensor05_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 58]) + String.valueOf(linedatachar1[j + 59]), 16);
+							/** 传感器06 第一个值 */
+							int sensor06_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 60]) + String.valueOf(linedatachar1[j + 61]), 16);
+							/** 传感器06 第二个值 */
+							int sensor06_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 62]) + String.valueOf(linedatachar1[j + 63]), 16);
+							/** 传感器07 第一个值 */
+							int sensor07_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 64]) + String.valueOf(linedatachar1[j + 65]), 16);
+							/** 传感器07 第二个值 */
+							int sensor07_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 66]) + String.valueOf(linedatachar1[j + 67]), 16);
+							/** 传感器08 第一个值 */
+							int sensor08_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 68]) + String.valueOf(linedatachar1[j + 69]), 16);
+							/** 传感器08 第二个值 */
+							int sensor08_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 70]) + String.valueOf(linedatachar1[j + 71]), 16);
 
 							try {
-								String str = 1 + String.valueOf(linedatachar1[j + 48]) + String.valueOf(linedatachar1[j + 49]) + String.valueOf(linedatachar1[j + 50]) + String.valueOf(linedatachar1[j + 51]) + " ";
-								str += 1 + String.valueOf(linedatachar1[j + 56]) + String.valueOf(linedatachar1[j + 57]) + String.valueOf(linedatachar1[j + 58]) + String.valueOf(linedatachar1[j + 59]) + " ";
-								str += 2 + String.valueOf(linedatachar1[j + 52]) + String.valueOf(linedatachar1[j + 53]) + String.valueOf(linedatachar1[j + 54]) + String.valueOf(linedatachar1[j + 55]) + " ";
-								str += 2 + String.valueOf(linedatachar1[j + 60]) + String.valueOf(linedatachar1[j + 61]) + String.valueOf(linedatachar1[j + 62]) + String.valueOf(linedatachar1[j + 63]) + " ";
-								writer.write(str);
-								writer.flush();
-								count = count + 1;
+								String str = 1 + String.valueOf(linedatachar1[j + 40]) + String.valueOf(linedatachar1[j + 41]) + String.valueOf(linedatachar1[j + 42]) + String.valueOf(linedatachar1[j + 43]) + " ";
+								str += 2 + String.valueOf(linedatachar1[j + 44]) + String.valueOf(linedatachar1[j + 45]) + String.valueOf(linedatachar1[j + 46]) + String.valueOf(linedatachar1[j + 47]) + " ";
+								str += 3 + String.valueOf(linedatachar1[j + 48]) + String.valueOf(linedatachar1[j + 49]) + String.valueOf(linedatachar1[j + 50]) + String.valueOf(linedatachar1[j + 51]) + " ";
+								str += 4 + String.valueOf(linedatachar1[j + 52]) + String.valueOf(linedatachar1[j + 53]) + String.valueOf(linedatachar1[j + 54]) + String.valueOf(linedatachar1[j + 55]) + " ";
+								str += 5 + String.valueOf(linedatachar1[j + 56]) + String.valueOf(linedatachar1[j + 57]) + String.valueOf(linedatachar1[j + 58]) + String.valueOf(linedatachar1[j + 59]) + " ";
+								str += 6 + String.valueOf(linedatachar1[j + 60]) + String.valueOf(linedatachar1[j + 61]) + String.valueOf(linedatachar1[j + 62]) + String.valueOf(linedatachar1[j + 63]) + " ";
+								str += 7 + String.valueOf(linedatachar1[j + 64]) + String.valueOf(linedatachar1[j + 65]) + String.valueOf(linedatachar1[j + 66]) + String.valueOf(linedatachar1[j + 67]) + " ";
+								str += 8 + String.valueOf(linedatachar1[j + 68]) + String.valueOf(linedatachar1[j + 69]) + String.valueOf(linedatachar1[j + 70]) + String.valueOf(linedatachar1[j + 71]) + " ";
+								writer_left.write(str);
+								writer_left.flush();
 							} catch (IOException e) {
+								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 
-							//如果list中有值
-							if (AppPublicLeftRight.power_ch1.size() > 1) {
-								//int n2=AppPublicLeftRight.linedataint_ch1_1.get(i-1)*100+AppPublicLeftRight.linedataint_ch1_2.get(i-1);
-								//该list的最后一个元素减去前一个元素的值，又放在了list中
-								//前足传感器的值和上一个值的差值
-								AppPublicLeftRight.difference_ch1.add(temp1 - AppPublicLeftRight.power_ch1.get(AppPublicLeftRight.power_ch1.size() - 2));
-								if (AppPublicLeftRight.difference_ch1.size() > 1) {
-									if (AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 2) < -2 && AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 1) > -2 && temp1 < 10 && count > 18) {
-										detected_num_int = detected_num_int + 1;
-										if (isstart1 == false) {
-											isstart1 = true;
-											AppPublicLeftRight.power_all_ch1_1 = 0;
-											AppPublicLeftRight.power_all_ch2_1 = 0;
-										} else if (isstart1 == true) {
-											Log.e("Warning", "power_all_ch1__1" + "__" + AppPublicLeftRight.power_all_ch1_1);
-											Log.e("Warning", "power_all_ch2__1" + "__" + AppPublicLeftRight.power_all_ch2_1);
-											//boolean judge=(boolean)(((AppPublicLeftRight.power_all_ch2_1/(AppPublicLeftRight.power_all_ch1_1+AppPublicLeftRight.power_all_ch2_1)))<(30/100));
-											if (((((AppPublicLeftRight.power_all_ch1_1 - AppPublicLeftRight.power_all_ch2_1) / (AppPublicLeftRight.power_all_ch1_1 + AppPublicLeftRight.power_all_ch2_1))) < (in_num))) {
-												mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
-												mMediaPlayer.start();
-												count = 0;
-												in_num_int = in_num_int + 1;
-												//isenable=false;
-												Log.e("Warning", "mediaplay");
-											} else if (((((AppPublicLeftRight.power_all_ch1_1 - AppPublicLeftRight.power_all_ch2_1) / (AppPublicLeftRight.power_all_ch1_1 + AppPublicLeftRight.power_all_ch2_1))) > (out_num))) {
-												mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
-												mMediaPlayer.start();
-												count = 0;
-												out_num_int = out_num_int + 1;
-												//isenable=false;
-												Log.e("Warning", "mediaplay");
-											}
-											isstart1 = false;
-											AppPublicLeftRight.power_all_ch1_1 = 0;
-											AppPublicLeftRight.power_all_ch2_1 = 0;
-										}
-										if (isstart2 == false) {
-											isstart2 = true;
-											AppPublicLeftRight.power_all_ch1_2 = 0;
-											AppPublicLeftRight.power_all_ch2_2 = 0;
-										} else if (isstart2 == true) {
-											Log.e("Warning", "power_all_ch1__2" + "__" + AppPublicLeftRight.power_all_ch1_2);
-											Log.e("Warning", "power_all_ch2__2" + "__" + AppPublicLeftRight.power_all_ch2_2);
-											//boolean judge=(boolean)(((AppPublicLeftRight.power_all_ch2_2/(AppPublicLeftRight.power_all_ch1_2+AppPublicLeftRight.power_all_ch2_2)))<(30/100));
-											if (((((AppPublicLeftRight.power_all_ch1_2 - AppPublicLeftRight.power_all_ch2_2) / (AppPublicLeftRight.power_all_ch1_2 + AppPublicLeftRight.power_all_ch2_2))) < (in_num))) {
-												mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
-												mMediaPlayer.start();
-												count = 0;
-												in_num_int = in_num_int + 1;
-												//isenable=false;
-												Log.e("Warning", "mediaplay");
-											} else if (((((AppPublicLeftRight.power_all_ch1_2 - AppPublicLeftRight.power_all_ch2_2) / (AppPublicLeftRight.power_all_ch1_2 + AppPublicLeftRight.power_all_ch2_2))) > (out_num))) {
-												mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
-												mMediaPlayer.start();
-												count = 0;
-												out_num_int = out_num_int + 1;
-												//isenable=false;
-												Log.e("Warning", "mediaplay");
-											}
-											isstart2 = false;
-											AppPublicLeftRight.power_all_ch1_2 = 0;
-											AppPublicLeftRight.power_all_ch2_2 = 0;
-										}
-									}
-								}
-								//System.gc();
+							double sensor01 = getSensorValue(sensor01_1, sensor01_2);
+							double sensor02 = getSensorValue(sensor02_1, sensor02_2);
+							double sensor03 = getSensorValue(sensor03_1, sensor03_2);
+							double sensor04 = getSensorValue(sensor04_1, sensor04_2);
+							double sensor05 = getSensorValue(sensor05_1, sensor05_2);
+							double sensor06 = getSensorValue(sensor06_1, sensor06_2);
+							double sensor07 = getSensorValue(sensor07_1, sensor07_2);
+							double sensor08 = getSensorValue(sensor08_1, sensor08_2);
+
+							temp1 = sensor01 + sensor02 + sensor03 + sensor04;
+							temp2 = sensor05 + sensor06 + sensor07 + sensor08;
+
+							if (isLeftGetData && isRightGetData) {
+								StringBuilder leftResult = new StringBuilder(String.valueOf(temp1))
+																   .append("+")
+																   .append(String.valueOf(temp2))
+																   .append("+")
+																   .append(String.valueOf(sensor01_1))
+																   .append("+")
+																   .append(String.valueOf(sensor01_2));
+								mCommService_left_queue.add(leftResult.toString());
+								//将接收到的两个值放在list中
+//								AppPublicLeftRight.linedataint_ch1_1.add(sensor01_1);
+//								AppPublicLeftRight.linedataint_ch1_2.add(sensor01_2);
+								mHandler.obtainMessage().sendToTarget();
 							}
-						}
-						if (isstart1) {
-							AppPublicLeftRight.power_all_ch1_1 = AppPublicLeftRight.power_all_ch1_1 + temp1;
-							AppPublicLeftRight.power_all_ch2_1 = AppPublicLeftRight.power_all_ch2_1 + temp2;
-						}
-						if (isstart2) {
-							AppPublicLeftRight.power_all_ch1_2 = AppPublicLeftRight.power_all_ch1_2 + temp1;
-							AppPublicLeftRight.power_all_ch2_2 = AppPublicLeftRight.power_all_ch2_2 + temp2;
 						}
 					}
 					//System.gc();
@@ -811,6 +878,180 @@ public class BluetoothComm_leftRight extends Activity {
 			}
 		}
 	};
+
+	private final Handler mHandler_right = new Handler() {
+		String str;
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+				case MESSAGE_STATE_CHANGE:
+					if (D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+					switch (msg.arg1) {
+						case BluetoothCommService_right.STATE_CONNECTED:
+							connectDevices02.setText(R.string.title_connected_to);
+							connectDevices02.append(mConnectedDeviceName);
+							time_start = SystemClock.elapsedRealtime();
+							istiming_right = true;
+							if (!isRightGetData) {
+								isRightGetData = true;
+							}
+							//    mConversationArrayAdapter.clear();
+							break;
+						case BluetoothCommService_right.STATE_CONNECTING:
+							connectDevices02.setText(R.string.title_connecting);
+							break;
+						case BluetoothCommService_right.STATE_LISTEN:
+						case BluetoothCommService_right.STATE_NONE:
+							connectDevices02.setText(R.string.title_not_connected);
+							istiming_right = false;
+							break;
+					}
+					break;
+				case MESSAGE_WRITE:
+					byte[] writeBuf = (byte[]) msg.obj;
+					// construct a string from the buffer
+					//  String writeMessage = new String(writeBuf);
+					//   mConversationArrayAdapter.add("Me:  " + writeMessage);
+					break;
+				case MESSAGE_READ:
+
+					byte[] readBuf = (byte[]) msg.obj;
+					// construct a string from the valid bytes in the buffer
+					String readMessage = new String(readBuf, 0, msg.arg1);
+					StringBuilder stringBuilder = new StringBuilder("");
+					if (msg.arg1 > 0) {
+						str = bytesToHexString(readBuf);
+						//Log.e(TAG, str);
+					}
+
+					linedatachar1 = str.toCharArray();
+					//System.gc();
+					int length = 40 * 2;
+					for (int j = 0; j < linedatachar1.length - length; j++) {
+						String stemp1 = String.valueOf(linedatachar1[j + 0]);
+						String stemp2 = String.valueOf(linedatachar1[j + 1]);
+						String stemp3 = String.valueOf(linedatachar1[j + 2]);
+						String stemp4 = String.valueOf(linedatachar1[j + 3]);
+						/** 下面的四个值是计数字节，后续可以用作校验用，暂时没用 */
+						String stemp5 = String.valueOf(linedatachar1[j + 4]);
+						String stemp6 = String.valueOf(linedatachar1[j + 5]);
+						String stemp7 = String.valueOf(linedatachar1[j + 6]);
+						String stemp8 = String.valueOf(linedatachar1[j + 7]);
+						/** 末尾的校验位，共三个字节，对应6个16进制的数 */
+						String stemp75 = String.valueOf(linedatachar1[j + 74]);
+						String stemp76 = String.valueOf(linedatachar1[j + 75]);
+						String stemp77 = String.valueOf(linedatachar1[j + 76]);
+						String stemp78 = String.valueOf(linedatachar1[j + 77]);
+						String stemp79 = String.valueOf(linedatachar1[j + 78]);
+						String stemp80 = String.valueOf(linedatachar1[j + 79]);
+						double temp3 = 0;
+						double temp4 = 0;
+						if ("5".equals(stemp1) && "5".equals(stemp2)
+									&& "A".equals(stemp3) && "A".equals(stemp4)
+									&& "F".equals(stemp75) && "F".equals(stemp76)
+									&& "F".equals(stemp77) && "F".equals(stemp78)
+									&& "F".equals(stemp79) && "F".equals(stemp80)) {
+							/** 传感器01 第一个值 */
+							int sensor01_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 40]) + String.valueOf(linedatachar1[j + 41]), 16);
+							/** 传感器01 第二个值 */
+							int sensor01_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 42]) + String.valueOf(linedatachar1[j + 43]), 16);
+							/** 传感器02 第一个值 */
+							int sensor02_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 44]) + String.valueOf(linedatachar1[j + 45]), 16);
+							/** 传感器02 第二个值 */
+							int sensor02_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 46]) + String.valueOf(linedatachar1[j + 47]), 16);
+							/** 传感器03 第一个值 */
+							int sensor03_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 48]) + String.valueOf(linedatachar1[j + 49]), 16);
+							/** 传感器03 第二个值 */
+							int sensor03_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 50]) + String.valueOf(linedatachar1[j + 51]), 16);
+							/** 传感器04 第一个值 */
+							int sensor04_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 52]) + String.valueOf(linedatachar1[j + 53]), 16);
+							/** 传感器04 第二个值 */
+							int sensor04_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 54]) + String.valueOf(linedatachar1[j + 55]), 16);
+							/** 传感器05 第一个值 */
+							int sensor05_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 56]) + String.valueOf(linedatachar1[j + 57]), 16);
+							/** 传感器05 第二个值 */
+							int sensor05_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 58]) + String.valueOf(linedatachar1[j + 59]), 16);
+							/** 传感器06 第一个值 */
+							int sensor06_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 60]) + String.valueOf(linedatachar1[j + 61]), 16);
+							/** 传感器06 第二个值 */
+							int sensor06_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 62]) + String.valueOf(linedatachar1[j + 63]), 16);
+							/** 传感器07 第一个值 */
+							int sensor07_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 64]) + String.valueOf(linedatachar1[j + 65]), 16);
+							/** 传感器07 第二个值 */
+							int sensor07_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 66]) + String.valueOf(linedatachar1[j + 67]), 16);
+							/** 传感器08 第一个值 */
+							int sensor08_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 68]) + String.valueOf(linedatachar1[j + 69]), 16);
+							/** 传感器08 第二个值 */
+							int sensor08_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 70]) + String.valueOf(linedatachar1[j + 71]), 16);
+
+							try {
+								String str = 1 + String.valueOf(linedatachar1[j + 40]) + String.valueOf(linedatachar1[j + 41]) + String.valueOf(linedatachar1[j + 42]) + String.valueOf(linedatachar1[j + 43]) + " ";
+								str += 2 + String.valueOf(linedatachar1[j + 44]) + String.valueOf(linedatachar1[j + 45]) + String.valueOf(linedatachar1[j + 46]) + String.valueOf(linedatachar1[j + 47]) + " ";
+								str += 3 + String.valueOf(linedatachar1[j + 48]) + String.valueOf(linedatachar1[j + 49]) + String.valueOf(linedatachar1[j + 50]) + String.valueOf(linedatachar1[j + 51]) + " ";
+								str += 4 + String.valueOf(linedatachar1[j + 52]) + String.valueOf(linedatachar1[j + 53]) + String.valueOf(linedatachar1[j + 54]) + String.valueOf(linedatachar1[j + 55]) + " ";
+								str += 5 + String.valueOf(linedatachar1[j + 56]) + String.valueOf(linedatachar1[j + 57]) + String.valueOf(linedatachar1[j + 58]) + String.valueOf(linedatachar1[j + 59]) + " ";
+								str += 6 + String.valueOf(linedatachar1[j + 60]) + String.valueOf(linedatachar1[j + 61]) + String.valueOf(linedatachar1[j + 62]) + String.valueOf(linedatachar1[j + 63]) + " ";
+								str += 7 + String.valueOf(linedatachar1[j + 64]) + String.valueOf(linedatachar1[j + 65]) + String.valueOf(linedatachar1[j + 66]) + String.valueOf(linedatachar1[j + 67]) + " ";
+								str += 8 + String.valueOf(linedatachar1[j + 68]) + String.valueOf(linedatachar1[j + 69]) + String.valueOf(linedatachar1[j + 70]) + String.valueOf(linedatachar1[j + 71]) + " ";
+								writer_right.write(str);
+								writer_right.flush();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+
+							double sensor01 = getSensorValue(sensor01_1, sensor01_2);
+							double sensor02 = getSensorValue(sensor02_1, sensor02_2);
+							double sensor03 = getSensorValue(sensor03_1, sensor03_2);
+							double sensor04 = getSensorValue(sensor04_1, sensor04_2);
+							double sensor05 = getSensorValue(sensor05_1, sensor05_2);
+							double sensor06 = getSensorValue(sensor06_1, sensor06_2);
+							double sensor07 = getSensorValue(sensor07_1, sensor07_2);
+							double sensor08 = getSensorValue(sensor08_1, sensor08_2);
+
+							temp3 = sensor01 + sensor02 + sensor03 + sensor04;
+							temp4 = sensor05 + sensor06 + sensor07 + sensor08;
+
+							if (isLeftGetData && isRightGetData) {
+
+								StringBuilder rightResult = new StringBuilder(String.valueOf(temp3))
+																	.append("+")
+																	.append(String.valueOf(temp4))
+																	.append("+")
+																	.append(String.valueOf(sensor01_1))
+																	.append("+")
+																	.append(String.valueOf(sensor01_2));
+								mCommService_right_queue.add(rightResult.toString());
+								//将接收到的两个值放在list中
+//								AppPublicLeftRight.linedataint_ch2_1.add(sensor01_1);
+//								AppPublicLeftRight.linedataint_ch2_2.add(sensor01_2);
+								mHandler.obtainMessage().sendToTarget();
+							}
+						}
+					}
+					//System.gc();
+					break;
+				case MESSAGE_DEVICE_NAME:
+					// save the connected device's name
+					mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
+					Toast.makeText(getApplicationContext(), "Connected to "
+																	+ mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+					break;
+				case MESSAGE_TOAST:
+					Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
+							Toast.LENGTH_SHORT).show();
+					break;
+			}
+		}
+	};
+
+
+	/** 计算传感器的值 */
+	private double getSensorValue(int sensor01, int sensor02) {
+		int n1 = sensor01 * 100 + sensor02;
+		return  3.412 * Math.exp((0.0016 * n1));
+	}
 
 	public static String bytesToHexString(byte[] bytes) {
 		String result = "";
@@ -954,8 +1195,11 @@ public class BluetoothComm_leftRight extends Activity {
 //						intent.putExtra("value", value);
 //						intent.setClass(BluetoothComm_sharp.this, FunctionSelectorActivity.class);
 //						BluetoothComm_sharp.this.startActivity(intent);
-						if (mCommService != null) {
-							mCommService.stop();
+						if (mCommService_left != null) {
+							mCommService_left.stop();
+						}
+						if (mCommService_right != null) {
+							mCommService_right.stop();
 						}
 						finish();
 					}

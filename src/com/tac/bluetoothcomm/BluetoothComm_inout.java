@@ -165,7 +165,7 @@ public class BluetoothComm_inout extends Activity {
 			if (!file.exists()) {
 				file.mkdir();
 			}
-			String name = "/sdcard/toe_walking/" + file_name + "_sharp.txt";
+			String name = "/sdcard/toe_walking/" + file_name + "_inout.txt";
 			if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
 				outStream = new FileOutputStream(name, true);
 				writer = new OutputStreamWriter(outStream, "UTF-8");
