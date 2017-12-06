@@ -17,6 +17,7 @@ public class FunctionSelectorActivity extends Activity {
 	private Button sharpButton = null;
 	private Button inOutButton = null;
 	private Button leftRightButton = null;
+	private Button sugarButton = null;
 	private String name;
 	private String age;
 	private String sex;
@@ -30,6 +31,8 @@ public class FunctionSelectorActivity extends Activity {
 		sharpButton = (Button) findViewById(R.id.sharpButton);
 		inOutButton = (Button) findViewById(R.id.inOutButton);
 		leftRightButton = (Button) findViewById(R.id.leftRightButton);
+		sugarButton = (Button) findViewById(R.id.sugarButton);
+
 		Intent intent = getIntent();
 		name = intent.getStringExtra("name");
 		age = intent.getStringExtra("age");
@@ -66,6 +69,19 @@ public class FunctionSelectorActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(FunctionSelectorActivity.this, BluetoothComm_leftRight.class);
+				Log.i("name", "FunctionSelectorActivity : " + name);
+				intent.putExtra("name", name);
+				intent.putExtra("age", age);
+				intent.putExtra("sex", sex);
+				intent.putExtra("value", value);
+				startActivity(intent);
+			}
+		});
+
+		sugarButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(FunctionSelectorActivity.this, BluetoothComm_leftRight_t.class);
 				Log.i("name", "FunctionSelectorActivity : " + name);
 				intent.putExtra("name", name);
 				intent.putExtra("age", age);

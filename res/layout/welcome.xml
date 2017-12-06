@@ -118,18 +118,25 @@
 	    
 	    >
 	</ListView>
+
   <Button
         android:id="@+id/start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"
-        android:textSize="15pt"               
-        android:background="@drawable/brainbutton01"
-        android:textColor="#000000" 
-        android:text="@string/start_test"/>   
+        android:layout_gravity="center_horizontal"
+        android:text="@string/start_test"
+        android:layout_width="150dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/button01"
+        android:paddingBottom="8dp"
+        android:paddingLeft="25dp"
+        android:paddingRight="25dp"
+        android:paddingTop="8dp"
+        android:textColor="#FFFFFF"
+        android:textSize="21sp"
+  />
         
-    </RelativeLayout>              
-        
-      
+    </RelativeLayout>
+
 </LinearLayout>
