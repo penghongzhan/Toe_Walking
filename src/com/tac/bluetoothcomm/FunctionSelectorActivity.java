@@ -2,6 +2,7 @@ package com.tac.bluetoothcomm;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +10,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import com.ronoid.bluetoothcomm.R;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Created by Hong on 2017/10/15.
@@ -37,7 +42,7 @@ public class FunctionSelectorActivity extends Activity {
 		name = intent.getStringExtra("name");
 		age = intent.getStringExtra("age");
 		sex = intent.getStringExtra("sex");
-		value = intent.getStringExtra("value");
+//		value = intent.getStringExtra("value");
 
 		sharpButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -47,7 +52,7 @@ public class FunctionSelectorActivity extends Activity {
 				intent.putExtra("name", name);
 				intent.putExtra("age", age);
 				intent.putExtra("sex", sex);
-				intent.putExtra("value", value);
+				intent.putExtra("value", getValue("sharp"));
 				startActivity(intent);
 			}
 		});
@@ -60,7 +65,7 @@ public class FunctionSelectorActivity extends Activity {
 				intent.putExtra("name", name);
 				intent.putExtra("age", age);
 				intent.putExtra("sex", sex);
-				intent.putExtra("value", value);
+				intent.putExtra("value", getValue("inout"));
 				startActivity(intent);
 			}
 		});
@@ -73,7 +78,7 @@ public class FunctionSelectorActivity extends Activity {
 				intent.putExtra("name", name);
 				intent.putExtra("age", age);
 				intent.putExtra("sex", sex);
-				intent.putExtra("value", value);
+				intent.putExtra("value", getValue("leftright"));
 				startActivity(intent);
 			}
 		});
@@ -86,35 +91,66 @@ public class FunctionSelectorActivity extends Activity {
 				intent.putExtra("name", name);
 				intent.putExtra("age", age);
 				intent.putExtra("sex", sex);
-				intent.putExtra("value", value);
+				intent.putExtra("value", getValue("temperature"));
 				startActivity(intent);
 			}
 		});
 	}
 
+	private String getValue(String key) {
+		Properties properties = loadConfig("/sdcard/toe_walking/threshold.properties");
+		return properties.get(key).toString();
+	}
+
+	//读取配置文件
+	private Properties loadConfig(String file) {
+		Properties properties = new Properties();
+		FileInputStream s = null;
+		try {
+			s = new FileInputStream(file);
+			properties.load(s);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			if (s != null) {
+				try {
+					s.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return properties;
+	}
+
 	@Override
 	public void onBackPressed() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(FunctionSelectorActivity.this);
-		builder.setMessage("确定要返回吗?");
-		builder.setTitle("提示");
-		builder.setPositiveButton("确认",
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						Intent intent = new Intent();
-						intent.setClass(FunctionSelectorActivity.this, Toe_Walking_Welcome.class);
-						startActivity(intent);
-						finish();
-					}
-				});
-		builder.setNegativeButton("取消",
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
-		builder.create().show();
+//		AlertDialog.Builder builder = new AlertDialog.Builder(FunctionSelectorActivity.this);
+//		builder.setMessage("确定要返回吗?");
+//		builder.setTitle("提示");
+//		builder.setPositiveButton("确认",
+//				new DialogInterface.OnClickListener() {
+//					@Override
+//					public void onClick(DialogInterface dialog, int which) {
+//						dialog.dismiss();
+//						Intent intent = new Intent();
+//						intent.setClass(FunctionSelectorActivity.this, Toe_Walking_Welcome.class);
+//						startActivity(intent);
+//						finish();
+//					}
+//				});
+//		builder.setNegativeButton("取消",
+//				new DialogInterface.OnClickListener() {
+//					@Override
+//					public void onClick(DialogInterface dialog, int which) {
+//						dialog.dismiss();
+//					}
+//				});
+//		builder.create().show();
+		Intent intent = new Intent();
+		intent.setClass(FunctionSelectorActivity.this, Toe_Walking_Welcome.class);
+		startActivity(intent);
+		finish();
 	}
 }

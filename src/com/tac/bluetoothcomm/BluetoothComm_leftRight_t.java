@@ -92,7 +92,7 @@ public class BluetoothComm_leftRight_t extends Activity {
 	private ArrayBlockingQueue<String> mCommService_right_queue = new ArrayBlockingQueue<String>(120);
 	private boolean isLeftGetData = false;
 	private boolean isRightGetData = false;
-	private final static int R0 = 100;
+	private final static int R0 = 2000;
 
 	private StringBuffer mOutStringBuffer = new StringBuffer("");
 
@@ -104,7 +104,7 @@ public class BluetoothComm_leftRight_t extends Activity {
 	private char[] linedatachar2;
 	//private ArrayList<Integer> linedataint;
 	private int count = 0;
-	private int value_int = 0;
+//	private int value_int = 0;
 	private Cursor cursor;
 	private Timer timer01;
 	private TimerTask task01;
@@ -213,13 +213,14 @@ public class BluetoothComm_leftRight_t extends Activity {
 		test_age = intent.getStringExtra("age");
 		test_sex = intent.getStringExtra("sex");
 		value = intent.getStringExtra("value");
-		value_int = Integer.valueOf(value).intValue();
+		Log.e("value", value);
+		String[] valueSplit = value.split(",");
+		smaller = Double.valueOf(valueSplit[0]);
+		bigger = Double.valueOf(valueSplit[1]);
+		insertinfo(test_name, test_age, test_sex, 0);
 		SimpleDateFormat sDateFormat = new SimpleDateFormat("MM月dd日HH时mm分");
 		String date = sDateFormat.format(new java.util.Date());
-		file_name = test_name + "_" + test_age + "_" + test_sex + "_" + value_int + "_" + date;
-		double it = Double.valueOf(value).doubleValue();
-		Log.e("value", (int) it + "");
-		insertinfo(test_name, test_age, test_sex, (int) it);
+		file_name = test_name + "_" + test_age + "_" + test_sex + "_" + value + "_" + date;
 		try {
 			File file = new File("/sdcard/toe_walking");
 			if (!file.exists()) {
@@ -242,8 +243,7 @@ public class BluetoothComm_leftRight_t extends Activity {
 		}
 //		value_num = (it / 100);
 //		value_num = 0.3;
-		smaller = -1.5;
-		bigger = smaller * -1;
+
 //		Log.e("Test_out_ch2", value_num + "");
 		//获得控件
 		time = (TextView) findViewById(R.id.detected_time_leftright_t);
@@ -289,8 +289,8 @@ public class BluetoothComm_leftRight_t extends Activity {
 						// 2,进行显示
 						XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
 						// 2.1, 构建数据
-						XYSeries series1 = new XYSeries("内侧");
-						XYSeries series2 = new XYSeries("外侧");
+						XYSeries series1 = new XYSeries("左腿");
+						XYSeries series2 = new XYSeries("右腿");
 						XYSeriesRenderer xyRenderer1 = new XYSeriesRenderer();
 						XYSeriesRenderer xyRenderer2 = new XYSeriesRenderer();
 						LinearLayout layout;
@@ -360,7 +360,7 @@ public class BluetoothComm_leftRight_t extends Activity {
 						//renderer.setXLabels(100);
 						renderer.setLabelsColor(Color.WHITE);
 						renderer.setXTitle("时间");
-						renderer.setYTitle("压强(kPa)");
+						renderer.setYTitle("温度(℃)");
 						renderer.setAxisTitleTextSize(16);
 						renderer.setLabelsTextSize(15);
 						renderer.setAxisTitleTextSize(16);
@@ -628,7 +628,7 @@ public class BluetoothComm_leftRight_t extends Activity {
 						//前足传感器的值和上一个值的差值
 						AppPublicLeftRight.difference_ch1.add(temp12 - AppPublicLeftRight.power_ch1.get(AppPublicLeftRight.power_ch1.size() - 2));
 						if (AppPublicLeftRight.difference_ch1.size() > 1) {
-							if (/*AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 2) < -2 && AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 1) > -2 && temp12 < 10 && */count > 18) {
+							if (/*AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 2) < -2 && AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 1) > -2 && temp12 < 10 && */count > 180) {
 								detected_num_int = detected_num_int + 1;
 								if (isstart1 == false) {
 									isstart1 = true;
@@ -778,37 +778,53 @@ public class BluetoothComm_leftRight_t extends Activity {
 									&& "F".equals(stemp77) && "F".equals(stemp78)
 									&& "F".equals(stemp79) && "F".equals(stemp80)) {
 							/** 传感器01 第一个值 */
-							int sensor01_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 8]) + String.valueOf(linedatachar1[j + 9]), 16);
+							String sensor01_1_s = String.valueOf(linedatachar1[j + 8]) + String.valueOf(linedatachar1[j + 9]);
+							int sensor01_1 = Integer.parseInt(sensor01_1_s, 16);
 							/** 传感器01 第二个值 */
-							int sensor01_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 10]) + String.valueOf(linedatachar1[j + 11]), 16);
+							String sensor01_2_s = String.valueOf(linedatachar1[j + 10]) + String.valueOf(linedatachar1[j + 11]);
+							int sensor01_2 = Integer.parseInt(sensor01_2_s, 16);
 							/** 传感器02 第一个值 */
-							int sensor02_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 12]) + String.valueOf(linedatachar1[j + 13]), 16);
+							String sensor02_1_s = String.valueOf(linedatachar1[j + 12]) + String.valueOf(linedatachar1[j + 13]);
+//							int sensor02_1 = Integer.parseInt(sensor02_1_s, 16);
 							/** 传感器02 第二个值 */
-							int sensor02_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 14]) + String.valueOf(linedatachar1[j + 15]), 16);
+							String sensor02_2_s = String.valueOf(linedatachar1[j + 14]) + String.valueOf(linedatachar1[j + 15]);
+//							int sensor02_2 = Integer.parseInt(sensor02_2_s, 16);
 							/** 传感器03 第一个值 */
-							int sensor03_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 16]) + String.valueOf(linedatachar1[j + 17]), 16);
+							String sensor03_1_s = String.valueOf(linedatachar1[j + 16]) + String.valueOf(linedatachar1[j + 17]);
+//							int sensor03_1 = Integer.parseInt(sensor03_1_s, 16);
 							/** 传感器03 第二个值 */
-							int sensor03_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 18]) + String.valueOf(linedatachar1[j + 19]), 16);
+							String sensor03_2_s = String.valueOf(linedatachar1[j + 18]) + String.valueOf(linedatachar1[j + 19]);
+//							int sensor03_2 = Integer.parseInt(sensor03_2_s, 16);
 							/** 传感器04 第一个值 */
-							int sensor04_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 20]) + String.valueOf(linedatachar1[j + 21]), 16);
+							String sensor04_1_s = String.valueOf(linedatachar1[j + 20]) + String.valueOf(linedatachar1[j + 21]);
+//							int sensor04_1 = Integer.parseInt(sensor04_1_s, 16);
 							/** 传感器04 第二个值 */
-							int sensor04_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 22]) + String.valueOf(linedatachar1[j + 23]), 16);
+							String sensor04_2_s = String.valueOf(linedatachar1[j + 22]) + String.valueOf(linedatachar1[j + 23]);
+//							int sensor04_2 = Integer.parseInt(sensor04_2_s, 16);
 							/** 传感器05 第一个值 */
-							int sensor05_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 24]) + String.valueOf(linedatachar1[j + 25]), 16);
+							String sensor05_1_s = String.valueOf(linedatachar1[j + 24]) + String.valueOf(linedatachar1[j + 25]);
+//							int sensor05_1 = Integer.parseInt(sensor05_1_s, 16);
 							/** 传感器05 第二个值 */
-							int sensor05_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 26]) + String.valueOf(linedatachar1[j + 27]), 16);
+							String sensor05_2_s = String.valueOf(linedatachar1[j + 26]) + String.valueOf(linedatachar1[j + 27]);
+//							int sensor05_2 = Integer.parseInt(sensor05_2_s, 16);
 							/** 传感器06 第一个值 */
-							int sensor06_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 28]) + String.valueOf(linedatachar1[j + 29]), 16);
+							String sensor06_1_s = String.valueOf(linedatachar1[j + 28]) + String.valueOf(linedatachar1[j + 29]);
+//							int sensor06_1 = Integer.parseInt(sensor06_1_s, 16);
 							/** 传感器06 第二个值 */
-							int sensor06_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 30]) + String.valueOf(linedatachar1[j + 31]), 16);
+							String sensor06_2_s = String.valueOf(linedatachar1[j + 30]) + String.valueOf(linedatachar1[j + 31]);
+//							int sensor06_2 = Integer.parseInt(sensor06_2_s, 16);
 							/** 传感器07 第一个值 */
-							int sensor07_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 32]) + String.valueOf(linedatachar1[j + 33]), 16);
+							String sensor07_1_s = String.valueOf(linedatachar1[j + 32]) + String.valueOf(linedatachar1[j + 33]);
+//							int sensor07_1 = Integer.parseInt(sensor07_1_s, 16);
 							/** 传感器07 第二个值 */
-							int sensor07_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 34]) + String.valueOf(linedatachar1[j + 35]), 16);
+							String sensor07_2_s = String.valueOf(linedatachar1[j + 34]) + String.valueOf(linedatachar1[j + 35]);
+//							int sensor07_2 = Integer.parseInt(sensor07_2_s, 16);
 							/** 传感器08 第一个值 */
-							int sensor08_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 36]) + String.valueOf(linedatachar1[j + 37]), 16);
+							String sensor08_1_s = String.valueOf(linedatachar1[j + 36]) + String.valueOf(linedatachar1[j + 37]);
+//							int sensor08_1 = Integer.parseInt(sensor08_1_s, 16);
 							/** 传感器08 第二个值 */
-							int sensor08_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 38]) + String.valueOf(linedatachar1[j + 39]), 16);
+							String sensor08_2_s = String.valueOf(linedatachar1[j + 38]) + String.valueOf(linedatachar1[j + 39]);
+//							int sensor08_2 = Integer.parseInt(sensor08_2_s, 16);
 
 							try {
 								String str = 1 + String.valueOf(linedatachar1[j + 8]) + String.valueOf(linedatachar1[j + 9]) + String.valueOf(linedatachar1[j + 10]) + String.valueOf(linedatachar1[j + 11]) + " ";
@@ -826,14 +842,15 @@ public class BluetoothComm_leftRight_t extends Activity {
 								e.printStackTrace();
 							}
 
-							double sensor01 = getTemperaturValue(sensor01_1, sensor01_2);
-							double sensor02 = getTemperaturValue(sensor02_1, sensor02_2);
-							double sensor03 = getTemperaturValue(sensor03_1, sensor03_2);
-							double sensor04 = getTemperaturValue(sensor04_1, sensor04_2);
-							double sensor05 = getTemperaturValue(sensor05_1, sensor05_2);
-							double sensor06 = getTemperaturValue(sensor06_1, sensor06_2);
-							double sensor07 = getTemperaturValue(sensor07_1, sensor07_2);
-							double sensor08 = getTemperaturValue(sensor08_1, sensor08_2);
+							//00 18
+							double sensor01 = getTemperaturValue(sensor01_1_s, sensor01_2_s);
+							double sensor02 = getTemperaturValue(sensor02_1_s, sensor02_2_s);
+							double sensor03 = getTemperaturValue(sensor03_1_s, sensor03_2_s);
+							double sensor04 = getTemperaturValue(sensor04_1_s, sensor04_2_s);
+							double sensor05 = getTemperaturValue(sensor05_1_s, sensor05_2_s);
+							double sensor06 = getTemperaturValue(sensor06_1_s, sensor06_2_s);
+							double sensor07 = getTemperaturValue(sensor07_1_s, sensor07_2_s);
+							double sensor08 = getTemperaturValue(sensor08_1_s, sensor08_2_s);
 
 							temp1 = sensor01 + sensor02 + sensor03 + sensor04;
 							temp2 = sensor05 + sensor06 + sensor07 + sensor08;
@@ -944,37 +961,53 @@ public class BluetoothComm_leftRight_t extends Activity {
 									&& "F".equals(stemp77) && "F".equals(stemp78)
 									&& "F".equals(stemp79) && "F".equals(stemp80)) {
 							/** 传感器01 第一个值 */
-							int sensor01_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 8]) + String.valueOf(linedatachar1[j + 9]), 16);
+							String sensor01_1_s = String.valueOf(linedatachar1[j + 8]) + String.valueOf(linedatachar1[j + 9]);
+							int sensor01_1 = Integer.parseInt(sensor01_1_s, 16);
 							/** 传感器01 第二个值 */
-							int sensor01_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 10]) + String.valueOf(linedatachar1[j + 11]), 16);
+							String sensor01_2_s = String.valueOf(linedatachar1[j + 10]) + String.valueOf(linedatachar1[j + 11]);
+							int sensor01_2 = Integer.parseInt(sensor01_2_s, 16);
 							/** 传感器02 第一个值 */
-							int sensor02_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 12]) + String.valueOf(linedatachar1[j + 13]), 16);
+							String sensor02_1_s = String.valueOf(linedatachar1[j + 12]) + String.valueOf(linedatachar1[j + 13]);
+//							int sensor02_1 = Integer.parseInt(sensor02_1_s, 16);
 							/** 传感器02 第二个值 */
-							int sensor02_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 14]) + String.valueOf(linedatachar1[j + 15]), 16);
+							String sensor02_2_s = String.valueOf(linedatachar1[j + 14]) + String.valueOf(linedatachar1[j + 15]);
+//							int sensor02_2 = Integer.parseInt(sensor02_2_s, 16);
 							/** 传感器03 第一个值 */
-							int sensor03_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 16]) + String.valueOf(linedatachar1[j + 17]), 16);
+							String sensor03_1_s = String.valueOf(linedatachar1[j + 16]) + String.valueOf(linedatachar1[j + 17]);
+//							int sensor03_1 = Integer.parseInt(sensor03_1_s, 16);
 							/** 传感器03 第二个值 */
-							int sensor03_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 18]) + String.valueOf(linedatachar1[j + 19]), 16);
+							String sensor03_2_s = String.valueOf(linedatachar1[j + 18]) + String.valueOf(linedatachar1[j + 19]);
+//							int sensor03_2 = Integer.parseInt(sensor03_2_s, 16);
 							/** 传感器04 第一个值 */
-							int sensor04_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 20]) + String.valueOf(linedatachar1[j + 21]), 16);
+							String sensor04_1_s = String.valueOf(linedatachar1[j + 20]) + String.valueOf(linedatachar1[j + 21]);
+//							int sensor04_1 = Integer.parseInt(sensor04_1_s, 16);
 							/** 传感器04 第二个值 */
-							int sensor04_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 22]) + String.valueOf(linedatachar1[j + 23]), 16);
+							String sensor04_2_s = String.valueOf(linedatachar1[j + 22]) + String.valueOf(linedatachar1[j + 23]);
+//							int sensor04_2 = Integer.parseInt(sensor04_2_s, 16);
 							/** 传感器05 第一个值 */
-							int sensor05_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 24]) + String.valueOf(linedatachar1[j + 25]), 16);
+							String sensor05_1_s = String.valueOf(linedatachar1[j + 24]) + String.valueOf(linedatachar1[j + 25]);
+//							int sensor05_1 = Integer.parseInt(sensor05_1_s, 16);
 							/** 传感器05 第二个值 */
-							int sensor05_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 26]) + String.valueOf(linedatachar1[j + 27]), 16);
+							String sensor05_2_s = String.valueOf(linedatachar1[j + 26]) + String.valueOf(linedatachar1[j + 27]);
+//							int sensor05_2 = Integer.parseInt(sensor05_2_s, 16);
 							/** 传感器06 第一个值 */
-							int sensor06_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 28]) + String.valueOf(linedatachar1[j + 29]), 16);
+							String sensor06_1_s = String.valueOf(linedatachar1[j + 28]) + String.valueOf(linedatachar1[j + 29]);
+//							int sensor06_1 = Integer.parseInt(sensor06_1_s, 16);
 							/** 传感器06 第二个值 */
-							int sensor06_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 30]) + String.valueOf(linedatachar1[j + 31]), 16);
+							String sensor06_2_s = String.valueOf(linedatachar1[j + 30]) + String.valueOf(linedatachar1[j + 31]);
+//							int sensor06_2 = Integer.parseInt(sensor06_2_s, 16);
 							/** 传感器07 第一个值 */
-							int sensor07_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 32]) + String.valueOf(linedatachar1[j + 33]), 16);
+							String sensor07_1_s = String.valueOf(linedatachar1[j + 32]) + String.valueOf(linedatachar1[j + 33]);
+//							int sensor07_1 = Integer.parseInt(sensor07_1_s, 16);
 							/** 传感器07 第二个值 */
-							int sensor07_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 34]) + String.valueOf(linedatachar1[j + 35]), 16);
+							String sensor07_2_s = String.valueOf(linedatachar1[j + 34]) + String.valueOf(linedatachar1[j + 35]);
+//							int sensor07_2 = Integer.parseInt(sensor07_2_s, 16);
 							/** 传感器08 第一个值 */
-							int sensor08_1 = Integer.parseInt(String.valueOf(linedatachar1[j + 36]) + String.valueOf(linedatachar1[j + 37]), 16);
+							String sensor08_1_s = String.valueOf(linedatachar1[j + 36]) + String.valueOf(linedatachar1[j + 37]);
+//							int sensor08_1 = Integer.parseInt(sensor08_1_s, 16);
 							/** 传感器08 第二个值 */
-							int sensor08_2 = Integer.parseInt(String.valueOf(linedatachar1[j + 38]) + String.valueOf(linedatachar1[j + 39]), 16);
+							String sensor08_2_s = String.valueOf(linedatachar1[j + 38]) + String.valueOf(linedatachar1[j + 39]);
+//							int sensor08_2 = Integer.parseInt(sensor08_2_s, 16);
 
 							try {
 								String str = 1 + String.valueOf(linedatachar1[j + 8]) + String.valueOf(linedatachar1[j + 9]) + String.valueOf(linedatachar1[j + 10]) + String.valueOf(linedatachar1[j + 11]) + " ";
@@ -992,14 +1025,14 @@ public class BluetoothComm_leftRight_t extends Activity {
 								e.printStackTrace();
 							}
 
-							double sensor01 = getTemperaturValue(sensor01_1, sensor01_2);
-							double sensor02 = getTemperaturValue(sensor02_1, sensor02_2);
-							double sensor03 = getTemperaturValue(sensor03_1, sensor03_2);
-							double sensor04 = getTemperaturValue(sensor04_1, sensor04_2);
-							double sensor05 = getTemperaturValue(sensor05_1, sensor05_2);
-							double sensor06 = getTemperaturValue(sensor06_1, sensor06_2);
-							double sensor07 = getTemperaturValue(sensor07_1, sensor07_2);
-							double sensor08 = getTemperaturValue(sensor08_1, sensor08_2);
+							double sensor01 = getTemperaturValue(sensor01_1_s, sensor01_2_s);
+							double sensor02 = getTemperaturValue(sensor02_1_s, sensor02_2_s);
+							double sensor03 = getTemperaturValue(sensor03_1_s, sensor03_2_s);
+							double sensor04 = getTemperaturValue(sensor04_1_s, sensor04_2_s);
+							double sensor05 = getTemperaturValue(sensor05_1_s, sensor05_2_s);
+							double sensor06 = getTemperaturValue(sensor06_1_s, sensor06_2_s);
+							double sensor07 = getTemperaturValue(sensor07_1_s, sensor07_2_s);
+							double sensor08 = getTemperaturValue(sensor08_1_s, sensor08_2_s);
 
 							temp3 = sensor01 + sensor02 + sensor03 + sensor04;
 							temp4 = sensor05 + sensor06 + sensor07 + sensor08;
@@ -1050,8 +1083,8 @@ public class BluetoothComm_leftRight_t extends Activity {
 	 * @param sensor02
 	 * @return
 	 */
-	private double getTemperaturValue(int sensor01, int sensor02) {
-		double sensorValue = getSensorValue(sensor01, sensor02);
+	private double getTemperaturValue(String sensor01, String sensor02) {
+		double sensorValue = Integer.valueOf(sensor01 + sensor02, 16);
 		return ((sensorValue / R0) - 1) / 3.90802 * 1000;
 	}
 

@@ -93,7 +93,7 @@ public class BluetoothComm_sharp extends Activity {
 	private char[] linedatachar2;
 	//private ArrayList<Integer> linedataint;
 	private int count = 0;
-	private int value_int = 0;
+//	private int value_int = 0;
 	private Cursor cursor;
 	private Timer timer01;
 	private TimerTask task01;
@@ -147,13 +147,12 @@ public class BluetoothComm_sharp extends Activity {
 		test_age = intent.getStringExtra("age");
 		test_sex = intent.getStringExtra("sex");
 		value = intent.getStringExtra("value");
-		value_int = Integer.valueOf(value).intValue();
+		Log.e("value", value);
+		insertinfo(test_name, test_age, test_sex, 0);
+		value_num = Double.valueOf(value);
 		SimpleDateFormat sDateFormat = new SimpleDateFormat("MM月dd日HH时mm分");
 		String date = sDateFormat.format(new java.util.Date());
-		file_name = test_name + "_" + test_age + "_" + test_sex + "_" + value_int + "_" + date;
-		double it = Double.valueOf(value).doubleValue();
-		Log.e("value", (int) it + "");
-		insertinfo(test_name, test_age, test_sex, (int) it);
+		file_name = test_name + "_" + test_age + "_" + test_sex + "_" + value + "_" + date;
 		try {
 			File file = new File("/sdcard/toe_walking");
 			if (!file.exists()) {
@@ -170,7 +169,6 @@ public class BluetoothComm_sharp extends Activity {
 			e.printStackTrace();
 			Log.e("m", "file write error");
 		}
-		value_num = (it / 100);
 		Log.e("Test_out_ch2", value_num + "");
 		//获得控件
 		//sendButton = (Button)findViewById(R.id.sendButton);
@@ -624,8 +622,10 @@ public class BluetoothComm_sharp extends Activity {
 						String stemp80 = String.valueOf(linedatachar1[j + 79]);
 						double temp1 = 0;
 						double temp2 = 0;
+						double temp12 = 0;
 						double temp3 = 0;
 						double temp4 = 0;
+						double temp34 = 0;
 						if ("5".equals(stemp1) && "5".equals(stemp2)
 									&& "A".equals(stemp3) && "A".equals(stemp4)
 									&& "F".equals(stemp75) && "F".equals(stemp76)
@@ -652,7 +652,8 @@ public class BluetoothComm_sharp extends Activity {
 							temp1 = 3.412 * Math.exp((0.0016 * n1));
 							int n2 = temp_int3 * 100 + temp_int4;
 							temp2 = 3.412 * Math.exp((0.0016 * n2));
-							AppPublic.power_ch1.add(temp1 + temp2);
+							temp12 = temp1 + temp2;
+							AppPublic.power_ch1.add(temp12);
 
 							//System.gc();
 							AppPublic.linedataint_ch2_1.add(temp_int13);
@@ -661,11 +662,12 @@ public class BluetoothComm_sharp extends Activity {
 							temp3 = 3.412 * Math.exp((0.0016 * n3));
 							int n4 = temp_int15 * 100 + temp_int16;
 							temp4 = 3.412 * Math.exp((0.0016 * n4));
-							AppPublic.power_ch2.add(temp3 + temp4);
+							temp34 = temp3 + temp4;
+							AppPublic.power_ch2.add(temp34);
 							//Log.e("power_ch2", temp+"");
 							if (AppPublic.power_ch2.size() > 1) {
 								//int n2=AppPublic.linedataint_ch1_1.get(i-1)*100+AppPublic.linedataint_ch1_2.get(i-1);
-								AppPublic.difference_ch2.add(temp2 - AppPublic.power_ch2.get(AppPublic.power_ch2.size() - 2));
+								AppPublic.difference_ch2.add(temp34 - AppPublic.power_ch2.get(AppPublic.power_ch2.size() - 2));
 								//System.gc();
 							}
 
@@ -687,9 +689,9 @@ public class BluetoothComm_sharp extends Activity {
 								//int n2=AppPublic.linedataint_ch1_1.get(i-1)*100+AppPublic.linedataint_ch1_2.get(i-1);
 								//该list的最后一个元素减去前一个元素的值，又放在了list中
 								//前足传感器的值和上一个值的差值
-								AppPublic.difference_ch1.add(temp1 - AppPublic.power_ch1.get(AppPublic.power_ch1.size() - 2));
+								AppPublic.difference_ch1.add(temp12 - AppPublic.power_ch1.get(AppPublic.power_ch1.size() - 2));
 								if (AppPublic.difference_ch1.size() > 1) {
-									if (AppPublic.difference_ch1.get(AppPublic.difference_ch1.size() - 2) < -2 && AppPublic.difference_ch1.get(AppPublic.difference_ch1.size() - 1) > -2 && temp1 < 10 && count > 18) {
+									if (AppPublic.difference_ch1.get(AppPublic.difference_ch1.size() - 2) < -2 && AppPublic.difference_ch1.get(AppPublic.difference_ch1.size() - 1) > -2 && temp12 < 10 && count > 18) {
 										detected_num_int = detected_num_int + 1;
 										if (isstart1 == false) {
 											isstart1 = true;
@@ -740,12 +742,12 @@ public class BluetoothComm_sharp extends Activity {
 							}
 						}
 						if (isstart1) {
-							AppPublic.power_all_ch1_1 = AppPublic.power_all_ch1_1 + temp1;
-							AppPublic.power_all_ch2_1 = AppPublic.power_all_ch2_1 + temp2;
+							AppPublic.power_all_ch1_1 = AppPublic.power_all_ch1_1 + temp12;
+							AppPublic.power_all_ch2_1 = AppPublic.power_all_ch2_1 + temp34;
 						}
 						if (isstart2) {
-							AppPublic.power_all_ch1_2 = AppPublic.power_all_ch1_2 + temp1;
-							AppPublic.power_all_ch2_2 = AppPublic.power_all_ch2_2 + temp2;
+							AppPublic.power_all_ch1_2 = AppPublic.power_all_ch1_2 + temp12;
+							AppPublic.power_all_ch2_2 = AppPublic.power_all_ch2_2 + temp34;
 						}
 					}
 					//System.gc();

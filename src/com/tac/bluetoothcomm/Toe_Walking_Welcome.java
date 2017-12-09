@@ -1,7 +1,9 @@
 package com.tac.bluetoothcomm;
 
+import java.io.*;
 import java.util.ArrayList;
 
+import android.os.Environment;
 import com.ronoid.bluetoothcomm.R;
 import com.tac.db.DatabaseHelper;
 
@@ -42,7 +44,7 @@ public class Toe_Walking_Welcome extends Activity {
 	private String name;
 	private String age;
 	private String sex;
-	private String value;
+//	private String value;
 	private ListView history_list;
 	private ArrayAdapter<String> historyAdapter;
 	private ArrayList<String> history = new ArrayList<String>();
@@ -88,9 +90,33 @@ public class Toe_Walking_Welcome extends Activity {
 			}			
 			db.close();
 			}
-		}   	       	
+		}
+
+		try {
+			File file = new File("/sdcard/toe_walking");
+			if (!file.exists()) {
+				file.mkdir();
+			}
+			String valueProp = "/sdcard/toe_walking/threshold.properties";
+			File file_th = new File(valueProp);
+			if (!file_th.exists()) {
+				if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+					FileOutputStream outStream_th = new FileOutputStream(file_th, true);
+					OutputStreamWriter writer_th = new OutputStreamWriter(outStream_th, "UTF-8");
+					writer_th.write("sharp=0.3\ninout=-0.3,0.12\nleftright=0.4,0.6\ntemperature=-1.5,1.5");
+					writer_th.close();
+					outStream_th.close();
+				}
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
-    private OnItemClickListener mNewDeviceClickListener = new OnItemClickListener() {
+		private OnItemClickListener mNewDeviceClickListener = new OnItemClickListener() {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
         	Intent intent = new Intent();
         	DatabaseHelper dbHelper = new DatabaseHelper(Toe_Walking_Welcome.this,"toe_walking.db");
@@ -144,27 +170,27 @@ public class Toe_Walking_Welcome extends Activity {
         	name=ET_name.getText().toString();
     		age=ET_age.getText().toString();
     		sex=ET_sex.getText().toString();
-    		value=ET_value.getText().toString();
+//    		value=ET_value.getText().toString();
         	if(name.equals("")&&age.equals("")){
     			Toast.makeText(getBaseContext(), "输入错误！请输入姓名和生日", Toast.LENGTH_SHORT).show();			
     		}else {
-    			if(value.equals("")){
-        			Toast.makeText(getBaseContext(), "输入错误！请输入正确阈值（1~50）", Toast.LENGTH_SHORT).show();			
-        		}else if(isNumeric(value)){
-        			if(Integer.valueOf(value).intValue()>0&&Integer.valueOf(value).intValue()<=50){
+//    			if(value.equals("")){
+//        			Toast.makeText(getBaseContext(), "输入错误！请输入正确阈值（1~50）", Toast.LENGTH_SHORT).show();
+//        		}else if(isNumeric(value)){
+//        			if(Integer.valueOf(value).intValue()>0&&Integer.valueOf(value).intValue()<=50){
         				intent.putExtra("name", name);
         				intent.putExtra("age", age);
         				intent.putExtra("sex", sex);
-        				intent.putExtra("value", value);
+//        				intent.putExtra("value", value);
         				intent.setClass(Toe_Walking_Welcome.this,FunctionSelectorActivity.class);
         				Toe_Walking_Welcome.this.startActivity(intent);
         				finish();        							
-            		}else{
-            		Toast.makeText(getBaseContext(), "输入错误！请输入正确阈值（1~50）", Toast.LENGTH_SHORT).show();
-    				}
-    				}else {
-    			Toast.makeText(getBaseContext(), "输入错误！请输入正确阈值", Toast.LENGTH_SHORT).show();
-    				};				
+//            		}else{
+//            			Toast.makeText(getBaseContext(), "输入错误！请输入正确阈值（1~50）", Toast.LENGTH_SHORT).show();
+//    				}
+//    				}else {
+//    			Toast.makeText(getBaseContext(), "输入错误！请输入正确阈值", Toast.LENGTH_SHORT).show();
+//    				};
     		}
 			
 		}
@@ -204,7 +230,7 @@ public class Toe_Walking_Welcome extends Activity {
 			intent.putExtra("name", name);
 			intent.putExtra("age", age);
 			intent.putExtra("sex", sex);
-			intent.putExtra("value", value);
+//			intent.putExtra("value", value);
 			intent.setClass(Toe_Walking_Welcome.this, FunctionSelectorActivity.class);
 			Toe_Walking_Welcome.this.startActivity(intent);
 			//finish();

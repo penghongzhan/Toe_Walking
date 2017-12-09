@@ -103,7 +103,7 @@ public class BluetoothComm_leftRight extends Activity {
 	private char[] linedatachar2;
 	//private ArrayList<Integer> linedataint;
 	private int count = 0;
-	private int value_int = 0;
+//	private int value_int = 0;
 	private Cursor cursor;
 	private Timer timer01;
 	private TimerTask task01;
@@ -212,13 +212,14 @@ public class BluetoothComm_leftRight extends Activity {
 		test_age = intent.getStringExtra("age");
 		test_sex = intent.getStringExtra("sex");
 		value = intent.getStringExtra("value");
-		value_int = Integer.valueOf(value).intValue();
+		Log.e("value", value);
+		insertinfo(test_name, test_age, test_sex, 0);
+		String[] valueSplit = value.split(",");
+		smaller = Double.valueOf(valueSplit[0]);
+		bigger = Double.valueOf(valueSplit[1]);
 		SimpleDateFormat sDateFormat = new SimpleDateFormat("MM月dd日HH时mm分");
 		String date = sDateFormat.format(new java.util.Date());
-		file_name = test_name + "_" + test_age + "_" + test_sex + "_" + value_int + "_" + date;
-		double it = Double.valueOf(value).doubleValue();
-		Log.e("value", (int) it + "");
-		insertinfo(test_name, test_age, test_sex, (int) it);
+		file_name = test_name + "_" + test_age + "_" + test_sex + "_" + value + "_" + date;
 		try {
 			File file = new File("/sdcard/toe_walking");
 			if (!file.exists()) {
@@ -241,8 +242,7 @@ public class BluetoothComm_leftRight extends Activity {
 		}
 //		value_num = (it / 100);
 //		value_num = 0.3;
-		smaller = 0.4;
-		bigger = 0.6;
+
 //		Log.e("Test_out_ch2", value_num + "");
 		//获得控件
 		//sendButton = (Button)findViewById(R.id.sendButton);
@@ -302,8 +302,8 @@ public class BluetoothComm_leftRight extends Activity {
 						// 2,进行显示
 						XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
 						// 2.1, 构建数据
-						XYSeries series1 = new XYSeries("内侧");
-						XYSeries series2 = new XYSeries("外侧");
+						XYSeries series1 = new XYSeries("左腿");
+						XYSeries series2 = new XYSeries("右腿");
 						XYSeriesRenderer xyRenderer1 = new XYSeriesRenderer();
 						XYSeriesRenderer xyRenderer2 = new XYSeriesRenderer();
 						LinearLayout layout;
@@ -615,7 +615,8 @@ public class BluetoothComm_leftRight extends Activity {
 					AppPublicLeftRight.linedataint_ch1_1.add(Integer.valueOf(leftSplit[2]));
 					AppPublicLeftRight.linedataint_ch1_2.add(Integer.valueOf(leftSplit[3]));
 					//对接收到的两个值进行转化，放在list中
-					AppPublicLeftRight.power_ch1.add(temp1 + temp2);
+					double temp12 = temp1 + temp2;
+					AppPublicLeftRight.power_ch1.add(temp12);
 
 					/** 第三个传感器的值 */
 					double temp3 = Double.valueOf(rightSplit[0]);
@@ -623,12 +624,13 @@ public class BluetoothComm_leftRight extends Activity {
 					double temp4 = Double.valueOf(rightSplit[1]);
 					AppPublicLeftRight.linedataint_ch2_1.add(Integer.valueOf(rightSplit[2]));
 					AppPublicLeftRight.linedataint_ch2_2.add(Integer.valueOf(rightSplit[3]));
-					AppPublicLeftRight.power_ch2.add(temp3 + temp4);
+					double temp34 = temp3 + temp4;
+					AppPublicLeftRight.power_ch2.add(temp34);
 
 					//Log.e("power_ch2", temp+"");
 					if (AppPublicLeftRight.power_ch2.size() > 1) {
 						//int n2=AppPublicLeftRight.linedataint_ch1_1.get(i-1)*100+AppPublicLeftRight.linedataint_ch1_2.get(i-1);
-						AppPublicLeftRight.difference_ch2.add(temp2 - AppPublicLeftRight.power_ch2.get(AppPublicLeftRight.power_ch2.size() - 2));
+						AppPublicLeftRight.difference_ch2.add(temp34 - AppPublicLeftRight.power_ch2.get(AppPublicLeftRight.power_ch2.size() - 2));
 						//System.gc();
 					}
 
@@ -637,9 +639,9 @@ public class BluetoothComm_leftRight extends Activity {
 						//int n2=AppPublicLeftRight.linedataint_ch1_1.get(i-1)*100+AppPublicLeftRight.linedataint_ch1_2.get(i-1);
 						//该list的最后一个元素减去前一个元素的值，又放在了list中
 						//前足传感器的值和上一个值的差值
-						AppPublicLeftRight.difference_ch1.add(temp1 - AppPublicLeftRight.power_ch1.get(AppPublicLeftRight.power_ch1.size() - 2));
+						AppPublicLeftRight.difference_ch1.add(temp12 - AppPublicLeftRight.power_ch1.get(AppPublicLeftRight.power_ch1.size() - 2));
 						if (AppPublicLeftRight.difference_ch1.size() > 1) {
-							if (AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 2) < -2 && AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 1) > -2 && temp1 < 10 && count > 18) {
+							if (AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 2) < -2 && AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 1) > -2 && temp12 < 10 && count > 18) {
 								detected_num_int = detected_num_int + 1;
 								if (isstart1 == false) {
 									isstart1 = true;
@@ -700,12 +702,12 @@ public class BluetoothComm_leftRight extends Activity {
 						//System.gc();
 					}
 					if (isstart1) {
-						AppPublicLeftRight.power_all_ch1_1 = AppPublicLeftRight.power_all_ch1_1 + temp1;
-						AppPublicLeftRight.power_all_ch2_1 = AppPublicLeftRight.power_all_ch2_1 + temp2;
+						AppPublicLeftRight.power_all_ch1_1 = AppPublicLeftRight.power_all_ch1_1 + temp12;
+						AppPublicLeftRight.power_all_ch2_1 = AppPublicLeftRight.power_all_ch2_1 + temp34;
 					}
 					if (isstart2) {
-						AppPublicLeftRight.power_all_ch1_2 = AppPublicLeftRight.power_all_ch1_2 + temp1;
-						AppPublicLeftRight.power_all_ch2_2 = AppPublicLeftRight.power_all_ch2_2 + temp2;
+						AppPublicLeftRight.power_all_ch1_2 = AppPublicLeftRight.power_all_ch1_2 + temp12;
+						AppPublicLeftRight.power_all_ch2_2 = AppPublicLeftRight.power_all_ch2_2 + temp34;
 					}
 //				}
 			}
