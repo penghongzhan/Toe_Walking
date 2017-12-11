@@ -5,12 +5,6 @@ package com.tac.bluetoothcomm;
  */
 public class PublicUtils {
 
-
-    private double getPressureValue(int sensor01, int sensor02) {
-
-    }
-
-
     /***
      * 解正常传感器的一元二次方程
      * @param result

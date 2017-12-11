@@ -839,9 +839,9 @@ public class BluetoothComm_leftRight extends Activity {
 
 							/** 左脚前四个正常 */
 							double sensor01 = PublicUtils.getPressureNormalValue(sensor01_1, sensor01_2);
-							double sensor02 = PublicUtils.getPressureNormalValue((sensor02_1, sensor02_2);
-							double sensor03 = PublicUtils.getPressureNormalValue((sensor03_1, sensor03_2);
-							double sensor04 = PublicUtils.getPressureNormalValue((sensor04_1, sensor04_2);
+							double sensor02 = PublicUtils.getPressureNormalValue(sensor02_1, sensor02_2);
+							double sensor03 = PublicUtils.getPressureNormalValue(sensor03_1, sensor03_2);
+							double sensor04 = PublicUtils.getPressureNormalValue(sensor04_1, sensor04_2);
 
 							/** 左脚后四个不正常 */
 							double sensor05 = PublicUtils.getPressureAbnormalValue(sensor05_1, sensor05_2);

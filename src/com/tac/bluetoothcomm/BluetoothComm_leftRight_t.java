@@ -94,7 +94,10 @@ public class BluetoothComm_leftRight_t extends Activity {
 	private boolean isLeftGetData = false;
 	private boolean isRightGetData = false;
 	private final static int R0 = 2100;
-	private List<double>
+	private List<Double> leftInit = new ArrayList<Double>();
+	private boolean isLeftInit = true;
+	private List<Double> rightInit = new ArrayList<Double>();
+	private boolean isRightInit = true;
 
 	private StringBuffer mOutStringBuffer = new StringBuffer("");
 
@@ -605,7 +608,7 @@ public class BluetoothComm_leftRight_t extends Activity {
 					AppPublicLeftRight.linedataint_ch1_2.add(Integer.valueOf(leftSplit[3]));
 					//对接收到的两个值进行转化，放在list中
 					double temp12 = temp1 + temp2;
-					AppPublicLeftRight.power_ch1.add(temp12);
+					AppPublicLeftRight.power_ch1.add(temp12/8);
 
 					/** 第三个传感器的值 */
 					double temp3 = Double.valueOf(rightSplit[0]);
@@ -614,7 +617,7 @@ public class BluetoothComm_leftRight_t extends Activity {
 					AppPublicLeftRight.linedataint_ch2_1.add(Integer.valueOf(rightSplit[2]));
 					AppPublicLeftRight.linedataint_ch2_2.add(Integer.valueOf(rightSplit[3]));
 					double temp34 = temp3 + temp4;
-					AppPublicLeftRight.power_ch2.add(temp34);
+					AppPublicLeftRight.power_ch2.add(temp34/8);
 
 					//Log.e("power_ch2", temp+"");
 					if (AppPublicLeftRight.power_ch2.size() > 1) {
@@ -854,10 +857,32 @@ public class BluetoothComm_leftRight_t extends Activity {
 							double sensor07 = getTemperaturValue(sensor07_1_s, sensor07_2_s);
 							double sensor08 = getTemperaturValue(sensor08_1_s, sensor08_2_s);
 
-							temp1 = sensor01 + sensor02 + sensor03 + sensor04;
-							temp2 = sensor05 + sensor06 + sensor07 + sensor08;
 
 							if (isLeftGetData && isRightGetData) {
+								if (isLeftInit) {
+									leftInit.add(sensor01);
+									leftInit.add(sensor02);
+									leftInit.add(sensor03);
+									leftInit.add(sensor04);
+									leftInit.add(sensor05);
+									leftInit.add(sensor06);
+									leftInit.add(sensor07);
+									leftInit.add(sensor08);
+									isLeftInit = false;
+								}
+
+								sensor01 = sensor01 - leftInit.get(0) + leftInit.get(0);
+								sensor02 = sensor02 - leftInit.get(1) + leftInit.get(0);
+								sensor03 = sensor03 - leftInit.get(2) + leftInit.get(0);
+								sensor04 = sensor04 - leftInit.get(3) + leftInit.get(0);
+								sensor05 = sensor05 - leftInit.get(4) + leftInit.get(0);
+								sensor06 = sensor06 - leftInit.get(5) + leftInit.get(0);
+								sensor07 = sensor07 - leftInit.get(6) + leftInit.get(0);
+								sensor08 = sensor08 - leftInit.get(7) + leftInit.get(0);
+
+								temp1 = sensor01 + sensor02 + sensor03 + sensor04;
+								temp2 = sensor05 + sensor06 + sensor07 + sensor08;
+
 								StringBuilder leftResult = new StringBuilder(String.valueOf(temp1))
 																   .append("+")
 																   .append(String.valueOf(temp2))
@@ -1036,10 +1061,31 @@ public class BluetoothComm_leftRight_t extends Activity {
 							double sensor07 = getTemperaturValue(sensor07_1_s, sensor07_2_s);
 							double sensor08 = getTemperaturValue(sensor08_1_s, sensor08_2_s);
 
-							temp3 = sensor01 + sensor02 + sensor03 + sensor04;
-							temp4 = sensor05 + sensor06 + sensor07 + sensor08;
 
 							if (isLeftGetData && isRightGetData) {
+								if (isRightInit) {
+									rightInit.add(sensor01);
+									rightInit.add(sensor02);
+									rightInit.add(sensor03);
+									rightInit.add(sensor04);
+									rightInit.add(sensor05);
+									rightInit.add(sensor06);
+									rightInit.add(sensor07);
+									rightInit.add(sensor08);
+									isRightInit = false;
+								}
+
+								sensor01 = sensor01 - rightInit.get(0) + leftInit.get(0);
+								sensor02 = sensor02 - rightInit.get(1) + leftInit.get(0);
+								sensor03 = sensor03 - rightInit.get(2) + leftInit.get(0);
+								sensor04 = sensor04 - rightInit.get(3) + leftInit.get(0);
+								sensor05 = sensor05 - rightInit.get(4) + leftInit.get(0);
+								sensor06 = sensor06 - rightInit.get(5) + leftInit.get(0);
+								sensor07 = sensor07 - rightInit.get(6) + leftInit.get(0);
+								sensor08 = sensor08 - rightInit.get(7) + leftInit.get(0);
+
+								temp3 = sensor01 + sensor02 + sensor03 + sensor04;
+								temp4 = sensor05 + sensor06 + sensor07 + sensor08;
 
 								StringBuilder rightResult = new StringBuilder(String.valueOf(temp3))
 																	.append("+")
