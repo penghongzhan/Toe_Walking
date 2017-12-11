@@ -40,6 +40,7 @@ import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -92,7 +93,8 @@ public class BluetoothComm_leftRight_t extends Activity {
 	private ArrayBlockingQueue<String> mCommService_right_queue = new ArrayBlockingQueue<String>(120);
 	private boolean isLeftGetData = false;
 	private boolean isRightGetData = false;
-	private final static int R0 = 2000;
+	private final static int R0 = 2100;
+	private List<double>
 
 	private StringBuffer mOutStringBuffer = new StringBuffer("");
 

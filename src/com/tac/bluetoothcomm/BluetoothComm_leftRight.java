@@ -837,14 +837,17 @@ public class BluetoothComm_leftRight extends Activity {
 								e.printStackTrace();
 							}
 
-							double sensor01 = getSensorValue(sensor01_1, sensor01_2);
-							double sensor02 = getSensorValue(sensor02_1, sensor02_2);
-							double sensor03 = getSensorValue(sensor03_1, sensor03_2);
-							double sensor04 = getSensorValue(sensor04_1, sensor04_2);
-							double sensor05 = getSensorValue(sensor05_1, sensor05_2);
-							double sensor06 = getSensorValue(sensor06_1, sensor06_2);
-							double sensor07 = getSensorValue(sensor07_1, sensor07_2);
-							double sensor08 = getSensorValue(sensor08_1, sensor08_2);
+							/** 左脚前四个正常 */
+							double sensor01 = PublicUtils.getPressureNormalValue(sensor01_1, sensor01_2);
+							double sensor02 = PublicUtils.getPressureNormalValue((sensor02_1, sensor02_2);
+							double sensor03 = PublicUtils.getPressureNormalValue((sensor03_1, sensor03_2);
+							double sensor04 = PublicUtils.getPressureNormalValue((sensor04_1, sensor04_2);
+
+							/** 左脚后四个不正常 */
+							double sensor05 = PublicUtils.getPressureAbnormalValue(sensor05_1, sensor05_2);
+							double sensor06 = PublicUtils.getPressureAbnormalValue(sensor06_1, sensor06_2);
+							double sensor07 = PublicUtils.getPressureAbnormalValue(sensor07_1, sensor07_2);
+							double sensor08 = PublicUtils.getPressureAbnormalValue(sensor08_1, sensor08_2);
 
 							temp1 = sensor01 + sensor02 + sensor03 + sensor04;
 							temp2 = sensor05 + sensor06 + sensor07 + sensor08;
@@ -1003,14 +1006,15 @@ public class BluetoothComm_leftRight extends Activity {
 								e.printStackTrace();
 							}
 
-							double sensor01 = getSensorValue(sensor01_1, sensor01_2);
-							double sensor02 = getSensorValue(sensor02_1, sensor02_2);
-							double sensor03 = getSensorValue(sensor03_1, sensor03_2);
-							double sensor04 = getSensorValue(sensor04_1, sensor04_2);
-							double sensor05 = getSensorValue(sensor05_1, sensor05_2);
-							double sensor06 = getSensorValue(sensor06_1, sensor06_2);
-							double sensor07 = getSensorValue(sensor07_1, sensor07_2);
-							double sensor08 = getSensorValue(sensor08_1, sensor08_2);
+							/** 右脚的多正常 */
+							double sensor01 = PublicUtils.getPressureNormalValue(sensor01_1, sensor01_2);
+							double sensor02 = PublicUtils.getPressureNormalValue(sensor02_1, sensor02_2);
+							double sensor03 = PublicUtils.getPressureNormalValue(sensor03_1, sensor03_2);
+							double sensor04 = PublicUtils.getPressureNormalValue(sensor04_1, sensor04_2);
+							double sensor05 = PublicUtils.getPressureNormalValue(sensor05_1, sensor05_2);
+							double sensor06 = PublicUtils.getPressureNormalValue(sensor06_1, sensor06_2);
+							double sensor07 = PublicUtils.getPressureNormalValue(sensor07_1, sensor07_2);
+							double sensor08 = PublicUtils.getPressureNormalValue(sensor08_1, sensor08_2);
 
 							temp3 = sensor01 + sensor02 + sensor03 + sensor04;
 							temp4 = sensor05 + sensor06 + sensor07 + sensor08;
@@ -1050,10 +1054,10 @@ public class BluetoothComm_leftRight extends Activity {
 
 
 	/** 计算传感器的值 */
-	private double getSensorValue(int sensor01, int sensor02) {
-		int n1 = sensor01 * 100 + sensor02;
-		return  3.412 * Math.exp((0.0016 * n1));
-	}
+//	private double getPressureValue(int sensor01, int sensor02) {
+//		int n1 = sensor01 * 100 + sensor02;
+//		return  3.412 * Math.exp((0.0016 * n1));
+//	}
 
 	public static String bytesToHexString(byte[] bytes) {
 		String result = "";
