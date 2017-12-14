@@ -691,7 +691,7 @@ public class BluetoothComm_sharp extends Activity {
 								//前足传感器的值和上一个值的差值
 								AppPublic.difference_ch1.add(temp12 - AppPublic.power_ch1.get(AppPublic.power_ch1.size() - 2));
 								if (AppPublic.difference_ch1.size() > 1) {
-									if (AppPublic.difference_ch1.get(AppPublic.difference_ch1.size() - 2) < -2 && AppPublic.difference_ch1.get(AppPublic.difference_ch1.size() - 1) > -2 && temp12 < 10 && count > 18) {
+									if (AppPublic.difference_ch1.get(AppPublic.difference_ch1.size() - 2) < -2 && AppPublic.difference_ch1.get(AppPublic.difference_ch1.size() - 1) > -2 && temp12 < 20 && count > 18) {
 										detected_num_int = detected_num_int + 1;
 										if (isstart1 == false) {
 											isstart1 = true;

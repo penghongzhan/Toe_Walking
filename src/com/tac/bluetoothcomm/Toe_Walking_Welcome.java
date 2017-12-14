@@ -99,15 +99,15 @@ public class Toe_Walking_Welcome extends Activity {
 			}
 			String valueProp = "/sdcard/toe_walking/threshold.properties";
 			File file_th = new File(valueProp);
-			if (!file_th.exists()) {
+//			if (!file_th.exists()) {
 				if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-					FileOutputStream outStream_th = new FileOutputStream(file_th, true);
+					FileOutputStream outStream_th = new FileOutputStream(file_th, false);
 					OutputStreamWriter writer_th = new OutputStreamWriter(outStream_th, "UTF-8");
-					writer_th.write("sharp=0.3\ninout=-0.3,0.12\nleftright=0.4,0.6\ntemperature=-1.5,1.5");
+					writer_th.write("sharp=0.3\ninout=-0.3,0.12\nleftright=0.4,0.6\ntemperature=-3.5,3.5");
 					writer_th.close();
 					outStream_th.close();
 				}
-			}
+//			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {

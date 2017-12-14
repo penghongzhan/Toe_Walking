@@ -709,7 +709,7 @@ public class BluetoothComm_inout extends Activity {
 								//前足传感器的值和上一个值的差值
 								AppPublicInOut.difference_ch1.add(temp12 - AppPublicInOut.power_ch1.get(AppPublicInOut.power_ch1.size() - 2));
 								if (AppPublicInOut.difference_ch1.size() > 1) {
-									if (AppPublicInOut.difference_ch1.get(AppPublicInOut.difference_ch1.size() - 2) < -2 && AppPublicInOut.difference_ch1.get(AppPublicInOut.difference_ch1.size() - 1) > -2 && temp12 < 10 && count > 18) {
+									if (AppPublicInOut.difference_ch1.get(AppPublicInOut.difference_ch1.size() - 2) < -2 && AppPublicInOut.difference_ch1.get(AppPublicInOut.difference_ch1.size() - 1) > -2 && temp12 < 20 && count > 18) {
 										detected_num_int = detected_num_int + 1;
 										if (isstart1 == false) {
 											isstart1 = true;

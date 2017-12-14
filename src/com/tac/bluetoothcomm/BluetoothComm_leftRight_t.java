@@ -93,7 +93,7 @@ public class BluetoothComm_leftRight_t extends Activity {
 	private ArrayBlockingQueue<String> mCommService_right_queue = new ArrayBlockingQueue<String>(120);
 	private boolean isLeftGetData = false;
 	private boolean isRightGetData = false;
-	private final static int R0 = 2100;
+	private final static int R0 = 1850;
 	private List<Double> leftInit = new ArrayList<Double>();
 	private boolean isLeftInit = true;
 	private List<Double> rightInit = new ArrayList<Double>();
@@ -357,7 +357,7 @@ public class BluetoothComm_leftRight_t extends Activity {
 						xyRenderer2.setLineWidth(2);
 						xyRenderer2.setDisplayChartValuesDistance(1);//设置两个折点间的距离，使得所有点的值都能显示
 						renderer.setYAxisMin(0);
-						renderer.setYAxisMax(250);
+						renderer.setYAxisMax(50);
 						renderer.setXAxisMin(0);
 						renderer.setXAxisMax(400);
 						renderer.setShowLabels(true);
@@ -633,7 +633,7 @@ public class BluetoothComm_leftRight_t extends Activity {
 						//前足传感器的值和上一个值的差值
 						AppPublicLeftRight.difference_ch1.add(temp12 - AppPublicLeftRight.power_ch1.get(AppPublicLeftRight.power_ch1.size() - 2));
 						if (AppPublicLeftRight.difference_ch1.size() > 1) {
-							if (/*AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 2) < -2 && AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 1) > -2 && temp12 < 10 && */count > 180) {
+							if (/*AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 2) < -2 && AppPublicLeftRight.difference_ch1.get(AppPublicLeftRight.difference_ch1.size() - 1) > -2 && temp12 < 10 && */count > 1800) {
 								detected_num_int = detected_num_int + 1;
 								if (isstart1 == false) {
 									isstart1 = true;
@@ -644,15 +644,15 @@ public class BluetoothComm_leftRight_t extends Activity {
 									Log.e("Warning", "power_all_ch2__1" + "__" + AppPublicLeftRight.power_all_ch2_1);
 									//boolean judge=(boolean)(((AppPublicLeftRight.power_all_ch2_1/(AppPublicLeftRight.power_all_ch1_1+AppPublicLeftRight.power_all_ch2_1)))<(30/100));
 									if ((AppPublicLeftRight.power_all_ch1_1 - AppPublicLeftRight.power_all_ch2_1) < smaller) {
-										mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
-										mMediaPlayer.start();
+//										mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
+//										mMediaPlayer.start();
 										count = 0;
 										left_num_int = left_num_int + 1;
 										//isenable=false;
 										Log.e("Warning", "mediaplay");
 									} else if ((AppPublicLeftRight.power_all_ch1_1 - AppPublicLeftRight.power_all_ch2_1) > bigger) {
-										mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
-										mMediaPlayer.start();
+//										mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
+//										mMediaPlayer.start();
 										count = 0;
 //										right_num_int = right_num_int + 1;
 										left_num_int = left_num_int + 1;
@@ -672,15 +672,15 @@ public class BluetoothComm_leftRight_t extends Activity {
 									Log.e("Warning", "power_all_ch2__2" + "__" + AppPublicLeftRight.power_all_ch2_2);
 									//boolean judge=(boolean)(((AppPublicLeftRight.power_all_ch2_2/(AppPublicLeftRight.power_all_ch1_2+AppPublicLeftRight.power_all_ch2_2)))<(30/100));
 									if ((AppPublicLeftRight.power_all_ch1_1 - AppPublicLeftRight.power_all_ch2_1) < smaller) {
-										mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
-										mMediaPlayer.start();
+//										mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
+//										mMediaPlayer.start();
 										count = 0;
 										left_num_int = left_num_int + 1;
 										//isenable=false;
 										Log.e("Warning", "mediaplay");
 									} else if ((AppPublicLeftRight.power_all_ch1_1 - AppPublicLeftRight.power_all_ch2_1) > bigger) {
-										mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
-										mMediaPlayer.start();
+//										mMediaPlayer = MediaPlayer.create(getBaseContext(), R.raw.warning);
+//										mMediaPlayer.start();
 										count = 0;
 //										right_num_int = right_num_int + 1;
 										left_num_int = left_num_int + 1;
