@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 /**
  * 测试vscode
+ * xxx
  */
 public class AboutActivity extends Activity{
 
