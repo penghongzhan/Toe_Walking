@@ -5,6 +5,9 @@ import com.ronoid.bluetoothcomm.R;
 import android.app.Activity;
 import android.os.Bundle;
 
+/**
+ * 测试vscode
+ */
 public class AboutActivity extends Activity{
 
 	@Override
